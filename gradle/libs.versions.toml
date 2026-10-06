@@ -3,7 +3,7 @@
 kotlin = "2.3.10"
 #Detekt
 detekt = "1.23.8"
-detektCompose = "0.4.28"
+detektCompose = "0.6.7"
 #Androidx
 androidx-document-file = "1.1.0"
 androidx-exif-interface = "1.4.2"
