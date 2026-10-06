@@ -12,6 +12,7 @@ import android.graphics.Path
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.Executors
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.floor
@@ -40,13 +41,22 @@ class MinimapRenderer(context: Context, private val userAgent: String) {
         val stitched = Bitmap.createBitmap(TILE * 3, TILE * 3, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(stitched)
         var loaded = 0
-        for (dy in -1..1) {
-            for (dx in -1..1) {
-                val tile = loadTile(Math.floorMod(tileX + dx, n), tileY + dy) ?: continue
+        // Fetch the tiles in parallel (a few connections, as the OSM policy asks); draw on this thread.
+        val pool = Executors.newFixedThreadPool(TILE_THREADS)
+        try {
+            val jobs = (-1..1).flatMap { dy ->
+                (-1..1).map { dx ->
+                    Triple(dx, dy, pool.submit<Bitmap?> { loadTile(Math.floorMod(tileX + dx, n), tileY + dy) })
+                }
+            }
+            for ((dx, dy, job) in jobs) {
+                val tile = job.get() ?: continue
                 canvas.drawBitmap(tile, ((dx + 1) * TILE).toFloat(), ((dy + 1) * TILE).toFloat(), null)
                 tile.recycle()
                 loaded++
             }
+        } finally {
+            pool.shutdown()
         }
         if (loaded == 0) {
             stitched.recycle()
@@ -99,6 +109,7 @@ class MinimapRenderer(context: Context, private val userAgent: String) {
     companion object {
         private const val ZOOM = 17
         private const val TILE = 256
+        private const val TILE_THREADS = 3
         private const val MAP_PX = 384
         private const val TIMEOUT_MS = 4000
         private const val MAX_AGE_MS = 7L * 24 * 60 * 60 * 1000

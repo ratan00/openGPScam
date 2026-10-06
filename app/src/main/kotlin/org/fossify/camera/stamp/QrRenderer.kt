@@ -3,6 +3,7 @@ package org.fossify.camera.stamp
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RectF
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
@@ -47,17 +48,20 @@ object QrRenderer {
         val top = rect.centerY() - cell * m.height / 2f
         paint.color = Color.BLACK
         paint.isAntiAlias = false
+        // One path and one draw call instead of a drawRect per module.
+        val modules = Path()
         for (y in 0 until m.height) {
             for (x in 0 until m.width) {
                 if (m[x, y]) {
                     // Overlap by a hair so no seams show between modules.
-                    canvas.drawRect(
+                    modules.addRect(
                         left + x * cell, top + y * cell,
-                        left + (x + 1) * cell + SEAM, top + (y + 1) * cell + SEAM, paint
+                        left + (x + 1) * cell + SEAM, top + (y + 1) * cell + SEAM, Path.Direction.CW
                     )
                 }
             }
         }
+        canvas.drawPath(modules, paint)
     }
 
     private const val QUIET_ZONE_MODULES = 2

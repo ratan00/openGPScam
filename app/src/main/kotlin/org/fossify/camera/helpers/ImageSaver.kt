@@ -51,7 +51,7 @@ class ImageSaver private constructor(
     companion object {
         private const val TEMP_FILE_PREFIX = "SimpleCamera"
         private const val TEMP_FILE_SUFFIX = ".tmp"
-        private const val COPY_BUFFER_SIZE = 1024
+        private const val COPY_BUFFER_SIZE = 64 * 1024
         private const val PENDING = 1
         private const val NOT_PENDING = 0
         private const val MAX_SAMPLE_SIZE = 4
@@ -80,6 +80,9 @@ class ImageSaver private constructor(
             onError = onError,
         ).saveImage()
     }
+
+    /** The camera's original JPEG, copied out of the image once and shared by the stamp and EXIF steps. */
+    private val cameraJpeg: ByteArray by lazy { jpegImageToJpegByteArray(image) }
 
     fun saveImage() {
         ensureBackgroundThread {
@@ -127,8 +130,7 @@ class ImageSaver private constructor(
                 // Stamped photos are re-encoded, so only copy the camera's EXIF when the user wants
                 // metadata saved (upstream FossifyOrg/Camera#198).
                 if (saveExifAttributes) {
-                    val imageByteArray = jpegImageToJpegByteArray(image)
-                    val inputStream: InputStream = ByteArrayInputStream(imageByteArray)
+                    val inputStream: InputStream = ByteArrayInputStream(cameraJpeg)
                     ExifInterface(inputStream).copyTo(exifInterface)
                 }
 
@@ -213,25 +215,30 @@ class ImageSaver private constructor(
      */
     @SuppressLint("RestrictedApi")
     private fun stampJpeg(jpeg: ByteArray, job: StampJob, target: File): Pair<Int, Int>? {
+        // Orientation the camera wrote into the JPEG, if any.
+        // Cropping re-encodes without EXIF, so read it from the camera's original JPEG.
+        val exifSource = if (image.format == ImageFormat.JPEG) cameraJpeg else jpeg
+        val exif = ExifInterface(ByteArrayInputStream(exifSource))
+        val matrix = Matrix()
+        matrix.postRotate(exif.rotationDegrees.toFloat())
+        if (exif.isFlipped) matrix.postScale(-1f, 1f)
+        // Same rules the unstamped path applies to the EXIF tag.
+        if (!ExifRotationAvailability().shouldUseExifOrientation(image)) {
+            matrix.postRotate(image.imageInfo.rotationDegrees.toFloat())
+        }
+        if (metadata.isReversedHorizontal) matrix.postScale(-1f, 1f)
+        if (metadata.isReversedVertical) matrix.postScale(1f, -1f)
+
         var sample = 1
         while (sample <= MAX_SAMPLE_SIZE) {
             try {
-                val options = BitmapFactory.Options().apply { inSampleSize = sample }
-                val decoded = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size, options) ?: return null
-
-                val matrix = Matrix()
-                // Orientation the camera wrote into the JPEG, if any.
-                // Cropping re-encodes without EXIF, so read it from the camera's original JPEG.
-                val exifSource = if (image.format == ImageFormat.JPEG) jpegImageToJpegByteArray(image) else jpeg
-                val exif = ExifInterface(ByteArrayInputStream(exifSource))
-                matrix.postRotate(exif.rotationDegrees.toFloat())
-                if (exif.isFlipped) matrix.postScale(-1f, 1f)
-                // Same rules the unstamped path applies to the EXIF tag.
-                if (!ExifRotationAvailability().shouldUseExifOrientation(image)) {
-                    matrix.postRotate(image.imageInfo.rotationDegrees.toFloat())
+                // Decode straight into a mutable bitmap when no rotation is needed, so the stamper
+                // can draw on it without making another full-size copy.
+                val options = BitmapFactory.Options().apply {
+                    inSampleSize = sample
+                    inMutable = matrix.isIdentity
                 }
-                if (metadata.isReversedHorizontal) matrix.postScale(-1f, 1f)
-                if (metadata.isReversedVertical) matrix.postScale(1f, -1f)
+                val decoded = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size, options) ?: return null
 
                 val oriented = if (matrix.isIdentity) {
                     decoded
