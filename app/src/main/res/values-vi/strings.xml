@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Máy ảnh</string>
     <string name="change_resolution">Thay đổi độ phân giải</string>
     <string name="faq_1_text">Nó phụ thuộc vào mục tiêu của bạn. Với mục đích chung, hầu hết mọi người khuyên nên sử dụng 75%-80%, khi hình ảnh vẫn có chất lượng thực sự tốt nhưng kích thước tệp bị giảm đáng kể so với 100%.</string>
     <string name="front_camera">Độ phân giải camera trước</string>

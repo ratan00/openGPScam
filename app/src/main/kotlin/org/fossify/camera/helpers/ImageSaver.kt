@@ -2,11 +2,13 @@ package org.fossify.camera.helpers
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
+import android.content.Context
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.ImageFormat
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.camera.core.ImageCapture
@@ -34,6 +36,7 @@ import java.util.*
  * */
 @Suppress("LongParameterList")
 class ImageSaver private constructor(
+    private val appContext: Context,
     private val contentResolver: ContentResolver,
     private val image: ImageProxy,
     private val mediaOutput: MediaOutput.ImageCaptureOutput,
@@ -54,6 +57,7 @@ class ImageSaver private constructor(
         private const val MAX_SAMPLE_SIZE = 4
 
         fun saveImage(
+            appContext: Context,
             contentResolver: ContentResolver,
             image: ImageProxy,
             mediaOutput: MediaOutput.ImageCaptureOutput,
@@ -64,6 +68,7 @@ class ImageSaver private constructor(
             onImageSaved: (Uri) -> Unit,
             onError: (ImageCaptureException) -> Unit,
         ) = ImageSaver(
+            appContext = appContext,
             contentResolver = contentResolver,
             image = image,
             mediaOutput = mediaOutput,
@@ -119,9 +124,13 @@ class ImageSaver private constructor(
 
             if (saveExifAttributes || stampedBitmapSize != null) {
                 val exifInterface = ExifInterface(tempFile)
-                val imageByteArray = jpegImageToJpegByteArray(image)
-                val inputStream: InputStream = ByteArrayInputStream(imageByteArray)
-                ExifInterface(inputStream).copyTo(exifInterface)
+                // Stamped photos are re-encoded, so only copy the camera's EXIF when the user wants
+                // metadata saved (upstream FossifyOrg/Camera#198).
+                if (saveExifAttributes) {
+                    val imageByteArray = jpegImageToJpegByteArray(image)
+                    val inputStream: InputStream = ByteArrayInputStream(imageByteArray)
+                    ExifInterface(inputStream).copyTo(exifInterface)
+                }
 
                 if (stampedBitmapSize != null) {
                     applyStampedExif(exifInterface, stampedBitmapSize)
@@ -191,8 +200,10 @@ class ImageSaver private constructor(
         exif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, height.toString())
         exif.setAttribute(ExifInterface.TAG_PIXEL_X_DIMENSION, width.toString())
         exif.setAttribute(ExifInterface.TAG_PIXEL_Y_DIMENSION, height.toString())
-        stamp?.let {
-            exif.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, StampFormatter.summary(it.data, it.settings))
+        if (saveExifAttributes) {
+            stamp?.let {
+                exif.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, StampFormatter.summary(it.data, it.settings))
+            }
         }
     }
 
@@ -228,7 +239,7 @@ class ImageSaver private constructor(
                     Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true)
                         .also { if (it !== decoded) decoded.recycle() }
                 }
-                val stamped = PhotoStamper.stamp(oriented, job.data, job.minimap, job.settings)
+                val stamped = PhotoStamper.stamp(oriented, job.data, job.minimap, job.settings, job.watermarkIcon)
                 FileOutputStream(target).use {
                     stamped.compress(Bitmap.CompressFormat.JPEG, jpegQuality, it)
                 }
@@ -249,6 +260,14 @@ class ImageSaver private constructor(
      *
      *  The temp file will be deleted afterwards.
      */
+    private fun scanFile(path: String) {
+        try {
+            MediaScannerConnection.scanFile(appContext, arrayOf(path), arrayOf("image/jpeg"), null)
+        } catch (_: Exception) {
+            // Best effort; the system scanner will pick the file up later anyway.
+        }
+    }
+
     private fun copyTempFileToDestination(tempFile: File) {
         var saveError: SaveError? = null
         var errorMessage: String? = null
@@ -277,6 +296,9 @@ class ImageSaver private constructor(
                 is MediaOutput.OutputStreamMediaOutput -> {
                     copyTempFileToOutputStream(tempFile, mediaOutput.outputStream)
                     outputUri = mediaOutput.uri
+                    // Files written by path are not indexed until scanned, so gallery and backup
+                    // apps would not see them (upstream FossifyOrg/Camera#303).
+                    mediaOutput.path?.let { scanFile(it) }
                 }
 
                 is MediaOutput.FileMediaOutput -> {

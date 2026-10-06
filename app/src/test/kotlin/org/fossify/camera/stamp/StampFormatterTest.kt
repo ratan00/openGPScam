@@ -81,4 +81,73 @@ class StampFormatterTest {
         val summary = StampFormatter.summary(data(), StampSettings(showAddress = false))
         assertTrue(summary.startsWith("Connaught Place, New Delhi | Lat 28.6315°"))
     }
+
+    @Test
+    fun headlineFollowsAddressToggle() {
+        val d = data().copy(headline = "Kasganj, Uttar Pradesh, India")
+        assertEquals("Kasganj, Uttar Pradesh, India", StampFormatter.lines(d, StampSettings(), Locale.US).headline)
+        assertNull(StampFormatter.lines(d, StampSettings(showAddress = false), Locale.US).headline)
+    }
+
+    @Test
+    fun fileNameUsesOrganisationCityAndTime() {
+        val d = data().copy(city = "Kasganj")
+        assertEquals(
+            "Nagar-Palika-Kasganj_Kasganj_2026-10-06_192600",
+            StampFormatter.fileName(d, StampSettings(organisation = "Nagar Palika, Kasganj"))
+        )
+        assertEquals("2026-10-06_192600", StampFormatter.fileName(data(), StampSettings()))
+    }
+
+    @Test
+    fun clockWarningOnlyBeyondTolerance() {
+        assertNull(StampFormatter.clockWarning(data().copy(clockSkewMs = 60_000), true, Locale.US))
+        assertNull(StampFormatter.clockWarning(data(), true, Locale.US))
+        // Phone is 9 minutes ahead of GPS.
+        assertEquals(
+            "⚠ GPS time 06 Oct 19:17",
+            StampFormatter.clockWarning(data().copy(clockSkewMs = 9 * 60_000), true, Locale.US)
+        )
+    }
+
+    @Test
+    fun mockLocationIsMarked() {
+        val lines = StampFormatter.lines(data().copy(isMock = true), StampSettings(), Locale.US)
+        assertTrue(lines.coordinates!!.endsWith("⚠ MOCK LOCATION"))
+    }
+
+    @Test
+    fun qrIsGoogleMapsLinkToCoordinates() {
+        assertEquals(
+            "https://www.google.com/maps/search/?api=1&query=28.631500,77.216700",
+            StampFormatter.qrText(data())
+        )
+        assertNull(StampFormatter.qrText(data(lat = null, lng = null)))
+    }
+
+    @Test
+    fun remarksLineIsTrimmedAndOptional() {
+        assertEquals("Case 42", StampFormatter.lines(data(), StampSettings(remarks = "  Case 42 "), Locale.US).remarks)
+        assertNull(StampFormatter.lines(data(), StampSettings(remarks = "  "), Locale.US).remarks)
+    }
+
+    @Test
+    fun headingUsesEightPointCompass() {
+        assertEquals("N 0°", StampFormatter.heading(0f))
+        assertEquals("NE 42°", StampFormatter.heading(42f))
+        assertEquals("E 90°", StampFormatter.heading(90f))
+        assertEquals("SW 225°", StampFormatter.heading(225f))
+        assertEquals("N 0°", StampFormatter.heading(359.7f))
+        assertEquals("NW 315°", StampFormatter.heading(-45f))
+    }
+
+    @Test
+    fun orientationLineCombinesAltitudeAndHeading() {
+        val d = data().copy(altitudeMeters = 215.4, headingDegrees = 42f)
+        assertEquals("Alt 215 m · NE 42°", StampFormatter.orientation(d, StampSettings()))
+        assertEquals("Alt 215 m", StampFormatter.orientation(d, StampSettings(showCompass = false)))
+        assertEquals("NE 42°", StampFormatter.orientation(d, StampSettings(showAltitude = false)))
+        assertNull(StampFormatter.orientation(d, StampSettings(showAltitude = false, showCompass = false)))
+        assertNull(StampFormatter.orientation(data(), StampSettings()))
+    }
 }

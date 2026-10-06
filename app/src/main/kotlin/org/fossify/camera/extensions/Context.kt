@@ -1,6 +1,9 @@
 package org.fossify.camera.extensions
 
 import android.content.Context
+import android.content.res.Configuration
+import org.fossify.camera.helpers.CAMERA_UI_LIGHT
+import org.fossify.camera.helpers.CAMERA_UI_SYSTEM
 import org.fossify.camera.helpers.Config
 import org.fossify.commons.extensions.hasPermission
 import org.fossify.commons.helpers.PERMISSION_ACCESS_COARSE_LOCATION
@@ -12,7 +15,7 @@ import java.util.Locale
 
 val Context.config: Config get() = Config.newInstance(applicationContext)
 
-fun Context.getOutputMediaFilePath(isPhoto: Boolean): String {
+fun Context.getOutputMediaFilePath(isPhoto: Boolean, baseName: String? = null): String {
     val mediaStorageDir = File(config.savePhotosFolder)
 
     if (!mediaStorageDir.exists()) {
@@ -21,7 +24,7 @@ fun Context.getOutputMediaFilePath(isPhoto: Boolean): String {
         }
     }
 
-    val mediaName = getRandomMediaName(isPhoto)
+    val mediaName = baseName ?: getRandomMediaName(isPhoto)
     return if (isPhoto) {
         "${mediaStorageDir.path}/$mediaName.jpg"
     } else {
@@ -45,6 +48,13 @@ fun getRandomMediaName(isPhoto: Boolean): String {
     } else {
         "VID_$timestamp"
     }
+}
+
+/** Whether the camera screen should use its light (daylight) controls. */
+fun Context.isLightCameraUi(): Boolean = when (config.cameraUiMode) {
+    CAMERA_UI_LIGHT -> true
+    CAMERA_UI_SYSTEM -> (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) != Configuration.UI_MODE_NIGHT_YES
+    else -> false
 }
 
 fun Context.checkLocationPermission(): Boolean {

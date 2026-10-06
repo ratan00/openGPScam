@@ -23,6 +23,10 @@ interface CameraXPreviewListener {
     fun onFocusCamera(xPos: Float, yPos: Float)
     fun onTouchPreview()
     fun displaySelectedResolution(resolutionOption: ResolutionOption)
+    /** [label] is e.g. "12M", or null when there is nothing to choose (video, single size). */
+    fun displayPhotoSize(label: String?)
+    fun onZoomChanged(minRatio: Float, maxRatio: Float, ratio: Float)
+    fun showPhotoSizeMenu(options: List<String>, selected: Int, onSelect: (Int) -> Unit)
     fun showImageSizes(
         selectedResolution: ResolutionOption,
         resolutions: List<ResolutionOption>,

@@ -34,7 +34,6 @@
     <string name="save_photo_metadata">Захоўваць метаданыя exif</string>
     <string name="photo_compression_quality">Якасць сціску фота</string>
     <string name="shutter">Затвор</string>
-    <string name="app_launcher_name">Камера</string>
     <string name="capture_mode">Рэжым здымкі</string>
     <string name="maximize_quality">Максімальная якасць</string>
     <string name="minimize_latency">Мінімальная затрымка</string>

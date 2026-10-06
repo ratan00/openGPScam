@@ -4,6 +4,10 @@ class MediaSizeStore(private val config: Config) {
 
     fun storeSize(isPhotoCapture: Boolean, isFrontCamera: Boolean, currentIndex: Int) {
         if (isPhotoCapture) {
+            if (getCurrentSizeIndex(true, isFrontCamera) != currentIndex) {
+                // A new aspect ratio starts at its largest size.
+                storePhotoSizeIndex(isFrontCamera, 0)
+            }
             if (isFrontCamera) {
                 config.frontPhotoResIndex = currentIndex
             } else {
@@ -31,6 +35,17 @@ class MediaSizeStore(private val config: Config) {
             } else {
                 config.backVideoResIndex
             }
+        }
+    }
+
+    fun getPhotoSizeIndex(isFrontCamera: Boolean): Int =
+        if (isFrontCamera) config.frontPhotoSizeIndex else config.backPhotoSizeIndex
+
+    fun storePhotoSizeIndex(isFrontCamera: Boolean, index: Int) {
+        if (isFrontCamera) {
+            config.frontPhotoSizeIndex = index
+        } else {
+            config.backPhotoSizeIndex = index
         }
     }
 }

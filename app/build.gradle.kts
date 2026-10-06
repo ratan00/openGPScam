@@ -144,6 +144,7 @@ dependencies {
     implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.window)
+    implementation(libs.zxing.core)
     detektPlugins(libs.compose.detekt)
     testImplementation("junit:junit:4.13.2")
 }

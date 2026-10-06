@@ -4,14 +4,20 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import org.fossify.camera.R
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 data class MySize(val width: Int, val height: Int, val isFullScreen: Boolean = false) {
     companion object {
+        private const val RATIO_TOLERANCE = 0.01f
         private const val ONE_MEGA_PIXEL = 1000000
         private const val ZERO_MEGA_PIXEL = "0.0"
     }
 
     private val ratio = width / height.toFloat()
+
+    /** Sensors often report sizes a few pixels off the exact ratio (e.g. 4080x2296 for 16:9). */
+    private fun isRatio(target: Float) = abs(ratio - target) < RATIO_TOLERANCE
 
     val pixels: Int = width * height
 
@@ -21,25 +27,25 @@ data class MySize(val width: Int, val height: Int, val isFullScreen: Boolean = f
         return !isFullScreen && (isFourToThree() || isThreeToTwo() || isSquare())
     }
 
-    fun isSixteenToNine() = ratio == 16 / 9f
+    fun isSixteenToNine() = isRatio(16 / 9f)
 
-    private fun isFiveToThree() = ratio == 5 / 3f
+    private fun isFiveToThree() = isRatio(5 / 3f)
 
-    private fun isFourToThree() = ratio == 4 / 3f
+    private fun isFourToThree() = isRatio(4 / 3f)
 
-    private fun isTwoToOne() = ratio == 2f
+    private fun isTwoToOne() = isRatio(2f)
 
-    private fun isThreeToFour() = ratio == 3 / 4f
+    private fun isThreeToFour() = isRatio(3 / 4f)
 
-    private fun isThreeToTwo() = ratio == 3 / 2f
+    private fun isThreeToTwo() = isRatio(3 / 2f)
 
-    private fun isSixToFive() = ratio == 6 / 5f
+    private fun isSixToFive() = isRatio(6 / 5f)
 
-    private fun isNineteenToNine() = ratio == 19 / 9f
+    private fun isNineteenToNine() = isRatio(19 / 9f)
 
-    private fun isNineteenToEight() = ratio == 19 / 8f
+    private fun isNineteenToEight() = isRatio(19 / 8f)
 
-    private fun isOneNineToOne() = ratio == 1.9f
+    private fun isOneNineToOne() = isRatio(1.9f)
 
     private fun isSquare() = width == height
 
@@ -83,6 +89,9 @@ data class MySize(val width: Int, val height: Int, val isFullScreen: Boolean = f
         isSquare() -> R.id.photo_1x1
         else -> throw UnsupportedOperationException("This size $this is not supported")
     }
+
+    /** Short label for the megapixel selector, e.g. "12M" or "50M". */
+    fun megaPixelLabel(): String = "${(pixels / ONE_MEGA_PIXEL.toFloat()).roundToInt()}M"
 
     fun toResolutionOption(): ResolutionOption {
         return ResolutionOption(buttonViewId = getButtonId(), imageDrawableResId = getImageResId())

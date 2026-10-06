@@ -337,6 +337,36 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/settings_stamp_show_altitude_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_show_altitude"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_show_altitude" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_show_compass_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_show_compass"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_show_compass" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:id="@+id/settings_stamp_show_date_time_holder"
                     style="@style/SettingsHolderCheckboxStyle"
                     android:layout_width="match_parent"
@@ -412,6 +442,110 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/settings_stamp_show_watermark_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_show_watermark"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_show_watermark" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_qr_holder"
+                    style="@style/SettingsHolderTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_qr_label"
+                        style="@style/SettingsTextLabelStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_qr" />
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_qr"
+                        style="@style/SettingsTextValueStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/settings_stamp_qr_label"
+                        tools:text="Off" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_officer_name_holder"
+                    style="@style/SettingsHolderTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_officer_name_label"
+                        style="@style/SettingsTextLabelStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_officer_name" />
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_officer_name"
+                        style="@style/SettingsTextValueStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/settings_stamp_officer_name_label" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_designation_holder"
+                    style="@style/SettingsHolderTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_designation_label"
+                        style="@style/SettingsTextLabelStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_designation" />
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_designation"
+                        style="@style/SettingsTextValueStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/settings_stamp_designation_label" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_organisation_holder"
+                    style="@style/SettingsHolderTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_organisation_label"
+                        style="@style/SettingsTextLabelStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_organisation" />
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_organisation"
+                        style="@style/SettingsTextValueStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/settings_stamp_organisation_label" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:id="@+id/settings_stamp_opacity_holder"
                     style="@style/SettingsHolderTextViewStyle"
                     android:layout_width="match_parent"
@@ -431,6 +565,29 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/settings_stamp_opacity_label"
                         tools:text="55%" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_camera_ui_holder"
+                    style="@style/SettingsHolderTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_camera_ui_label"
+                        style="@style/SettingsTextLabelStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/camera_ui_theme" />
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_camera_ui"
+                        style="@style/SettingsTextValueStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/settings_camera_ui_label"
+                        tools:text="Dark" />
 
                 </RelativeLayout>
 

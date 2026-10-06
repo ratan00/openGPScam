@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.os.CountDownTimer
 import android.provider.MediaStore
 import android.view.*
 import android.widget.LinearLayout
+import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
@@ -23,6 +25,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.slider.Slider
 import com.google.android.material.tabs.TabLayout
 import org.fossify.camera.BuildConfig
 import org.fossify.camera.R
@@ -30,19 +33,25 @@ import org.fossify.camera.databinding.ActivityMainBinding
 import org.fossify.camera.extensions.config
 import org.fossify.camera.extensions.fadeIn
 import org.fossify.camera.extensions.fadeOut
+import org.fossify.camera.extensions.isLightCameraUi
 import org.fossify.camera.extensions.setShadowIcon
 import org.fossify.camera.extensions.toFlashModeId
 import org.fossify.camera.helpers.*
 import org.fossify.camera.implementations.CameraXInitializer
 import org.fossify.camera.implementations.CameraXPreviewListener
 import org.fossify.camera.interfaces.MyPreview
+import org.fossify.camera.stamp.QrPlacement
+import org.fossify.camera.stamp.showOfficerDialog
+import org.fossify.camera.stamp.showRemarksDialog
 import org.fossify.camera.models.ResolutionOption
 import org.fossify.camera.models.TimerMode
 import org.fossify.camera.views.FocusCircleView
 import org.fossify.commons.extensions.*
 import org.fossify.commons.helpers.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, CameraXPreviewListener {
     private companion object {
@@ -52,6 +61,15 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
         private const val MIN_SWIPE_DISTANCE_X = 100
         private const val TIMER_2_SECONDS = 2001
         private const val SWITCH_CAMERA_ROTATION_ANGLE = 180f
+        private const val MIN_ZOOM_SPAN = 0.1f
+        private const val ZOOM_EPSILON = 0.01f
+        private const val ZOOM_SLIDER_HIDE_DELAY_MS = 1500L
+        private const val GPS_REFRESH_TIMEOUT_MS = 35_000L
+        private const val GPS_PULSE_MS = 450L
+        private const val INACTIVE_ALPHA = 0.6f
+        private const val LIGHT_UI_BACKGROUND = 0xFFF2F2F2.toInt()
+        private const val LIGHT_UI_FOREGROUND = 0xFF1F1F1F.toInt()
+        private const val LIGHT_UI_SHUTTER = 0xFF3C3C3C.toInt()
     }
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
@@ -120,10 +138,15 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
 
     override fun onResume() {
         super.onResume()
+        if (appliedLightUi != null && appliedLightUi != isLightCameraUi()) {
+            recreate()
+            return
+        }
         if (hasStorageAndCameraPermissions()) {
             val isInPhotoMode = isInPhotoMode()
             setupPreviewImage(isInPhotoMode)
             mFocusCircleView.setStrokeColor(getProperPrimaryColor())
+            updateQrButton()
             toggleActionButtons(enabled = true)
             mOrientationEventListener.enable()
         }
@@ -223,6 +246,9 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
 
     private fun hideIntentButtons() = binding.apply {
         cameraModeHolder.beGone()
+        // Photos for other apps are not stamped, so these have nothing to do.
+        refreshGps.beGone()
+        remarksButton.beGone()
         layoutTop.settings.beGone()
         lastPhotoVideoPreview.beInvisible()
     }
@@ -312,7 +338,11 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ViewCompat.setOnApplyWindowInsetsListener(binding.viewHolder) { _, windowInsets ->
             val safeInsetBottom = windowInsets.displayCutout?.safeInsetBottom ?: 0
-            val safeInsetTop = windowInsets.displayCutout?.safeInsetTop ?: 0
+            // Some dispatches (after a permission dialog, aspect change) report no cutout; it is a fixed
+            // property of the screen, so keep the last real value instead of sliding under the camera hole.
+            val reportedInsetTop = windowInsets.displayCutout?.safeInsetTop ?: 0
+            if (reportedInsetTop > 0) lastCutoutTop = reportedInsetTop
+            val safeInsetTop = maxOf(reportedInsetTop, lastCutoutTop)
 
             binding.topOptions.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 topMargin = safeInsetTop
@@ -398,6 +428,55 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
             settings.setShadowIcon(R.drawable.ic_settings_vector)
             settings.setOnClickListener { launchSettings() }
             changeResolution.setOnClickListener { mPreview?.showChangeResolution() }
+            changeMegapixels.setOnClickListener { mPreview?.showPhotoSizes() }
+            toggleQr.setOnClickListener {
+                config.stampQrPlacement = if (config.stampQrPlacement == QrPlacement.OFF) {
+                    QrPlacement.INSTEAD_OF_MAP
+                } else {
+                    QrPlacement.OFF
+                }
+                updateQrButton()
+                stampOverlay.invalidate()
+            }
+        }
+
+        zoomSlider.addOnChangeListener { _, value, fromUser ->
+            if (fromUser) mPreview?.setZoomRatio(value)
+        }
+        zoomSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+                zoomBar.removeCallbacks(hideZoomSlider)
+            }
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                showZoomSlider()
+            }
+        })
+        // The zoom pill floats over the picture, just above the location label.
+        stampOverlay.onFreeBottomChanged = { freeBottom ->
+            stampFreeBottom = freeBottom
+            liftZoomBar()
+        }
+
+        applyCameraUiTheme()
+        updateQrButton()
+
+        refreshGps.setOnClickListener { refreshGpsFix() }
+        remarksButton.setOnClickListener {
+            showRemarksDialog {
+                stampOverlay.invalidate()
+                updateRemarksButton()
+            }
+        }
+        updateRemarksButton()
+
+        stampOverlay.onOfficerClick = {
+            showOfficerDialog { stampOverlay.invalidate() }
+        }
+
+        zoomValue.setOnClickListener {
+            showZoomSlider()
+            mPreview?.setZoomRatio(1f)
         }
 
         shutter.setOnClickListener { shutterPressed() }
@@ -566,10 +645,30 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
         selectVideoTab()
     }
 
+    /**
+     * Newest item saved directly in our photo folder, so the thumbnail never shows e.g. a picture
+     * that just arrived in a messenger (upstream FossifyOrg/Camera#51).
+     */
+    @Suppress("DEPRECATION") // DATA is still readable and the simplest way to filter by folder
+    private fun getLatestMediaIdInSaveFolder(uri: Uri): Long {
+        val folder = config.savePhotosFolder.trimEnd('/')
+        val projection = arrayOf(MediaStore.MediaColumns._ID)
+        val selection = "${MediaStore.MediaColumns.DATA} LIKE ? AND ${MediaStore.MediaColumns.DATA} NOT LIKE ?"
+        val args = arrayOf("$folder/%", "$folder/%/%")
+        val sort = "${MediaStore.MediaColumns.DATE_ADDED} DESC, ${MediaStore.MediaColumns._ID} DESC"
+        return try {
+            contentResolver.query(uri, projection, selection, args, sort)?.use { cursor ->
+                if (cursor.moveToFirst()) cursor.getLong(0) else 0L
+            } ?: 0L
+        } catch (_: Exception) {
+            getLatestMediaId(uri)
+        }
+    }
+
     private fun setupPreviewImage(isPhoto: Boolean) {
         val uri =
             if (isPhoto) MediaStore.Images.Media.EXTERNAL_CONTENT_URI else MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        val lastMediaId = getLatestMediaId(uri)
+        val lastMediaId = getLatestMediaIdInSaveFolder(uri)
         if (lastMediaId == 0L) {
             return
         }
@@ -668,6 +767,11 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
             layoutTop.toggleTimer,
             layoutTop.toggleFlash,
             layoutTop.changeResolution,
+            layoutTop.changeMegapixels,
+            layoutTop.toggleQr,
+            zoomValue,
+            refreshGps,
+            remarksButton,
             shutter,
             layoutTop.settings,
             lastPhotoVideoPreview,
@@ -835,6 +939,161 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
         }
     }
 
+    override fun showPhotoSizeMenu(options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
+        PopupMenu(this, binding.layoutTop.changeMegapixels).apply {
+            options.forEachIndexed { index, title ->
+                menu.add(Menu.NONE, index, index, title).apply {
+                    isCheckable = true
+                    isChecked = index == selected
+                }
+            }
+            menu.setGroupCheckable(Menu.NONE, true, true)
+            setOnMenuItemClickListener {
+                onSelect(it.itemId)
+                true
+            }
+            show()
+        }
+    }
+
+    override fun displayPhotoSize(label: String?) {
+        binding.layoutTop.changeMegapixels.apply {
+            text = label
+            beVisibleIf(label != null)
+        }
+    }
+
+    /** The QR button glows in the accent colour while the QR code replaces the minimap. */
+    private fun updateQrButton() = binding.layoutTop.toggleQr.apply {
+        val active = config.stampQrPlacement != QrPlacement.OFF
+        iconTint = ColorStateList.valueOf(if (active) getProperPrimaryColor() else controlColor())
+    }
+
+    /** Light theme the controls were built with; null until applied. */
+    private var appliedLightUi: Boolean? = null
+
+    private fun controlColor() = if (isLightCameraUi()) LIGHT_UI_FOREGROUND else Color.WHITE
+
+    /** Daylight mode: light bars with dark controls, readable in direct sunlight. */
+    private fun applyCameraUiTheme() = binding.apply {
+        val light = isLightCameraUi()
+        appliedLightUi = light
+        if (!light) return@apply
+
+        val fg = ColorStateList.valueOf(LIGHT_UI_FOREGROUND)
+        viewHolder.setBackgroundColor(LIGHT_UI_BACKGROUND)
+        previewView.setBackgroundColor(LIGHT_UI_BACKGROUND)
+        bottomOverlay.setBackgroundColor(LIGHT_UI_BACKGROUND)
+        arrayOf(toggleCamera, refreshGps, remarksButton, lastPhotoVideoPreview).forEach {
+            it.backgroundTintList = fg
+            if (it !== lastPhotoVideoPreview) it.imageTintList = fg
+        }
+        shutter.imageTintList = ColorStateList.valueOf(LIGHT_UI_SHUTTER)
+        arrayOf(layoutTop.toggleTimer, layoutTop.toggleFlash, layoutTop.changeResolution, layoutTop.settings)
+            .forEach { it.iconTint = fg }
+        layoutTop.settings.setShadowIcon(R.drawable.ic_settings_vector)
+        layoutTop.changeMegapixels.apply {
+            setTextColor(LIGHT_UI_FOREGROUND)
+            setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+        }
+        cameraModeTab.setTabTextColors(LIGHT_UI_FOREGROUND, ContextCompat.getColor(root.context, org.fossify.commons.R.color.md_grey_600_dark))
+        videoRecCurrTimer.setTextColor(LIGHT_UI_FOREGROUND)
+        WindowCompat.getInsetsController(window, root).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+    }
+
+    private var gpsRefreshAnimator: android.animation.ObjectAnimator? = null
+
+    private fun refreshGpsFix() = binding.apply {
+        if (gpsRefreshAnimator != null) return@apply
+        toast(R.string.refresh_gps_started)
+        gpsRefreshAnimator = android.animation.ObjectAnimator.ofFloat(refreshGps, View.ALPHA, 1f, 0.3f).apply {
+            duration = GPS_PULSE_MS
+            repeatMode = android.animation.ValueAnimator.REVERSE
+            repeatCount = android.animation.ValueAnimator.INFINITE
+            start()
+        }
+        val finish = { message: String ->
+            gpsRefreshAnimator?.cancel()
+            gpsRefreshAnimator = null
+            refreshGps.alpha = 1f
+            refreshGps.removeCallbacks(gpsRefreshTimeout)
+            toast(message)
+            stampOverlay.invalidate()
+        }
+        gpsRefreshTimeout = Runnable { finish(getString(R.string.refresh_gps_failed)) }
+        refreshGps.postDelayed(gpsRefreshTimeout, GPS_REFRESH_TIMEOUT_MS)
+        mPreview?.refreshLocation { fix ->
+            if (gpsRefreshAnimator == null) return@refreshLocation // timed out already
+            if (fix == null) {
+                finish(getString(R.string.refresh_gps_failed))
+            } else {
+                val accuracy = if (fix.hasAccuracy()) "±${fix.accuracy.roundToInt()} m" else fix.provider.orEmpty()
+                finish(getString(R.string.refresh_gps_done, accuracy))
+            }
+        } ?: finish(getString(R.string.refresh_gps_failed))
+    }
+
+    private var gpsRefreshTimeout = Runnable {}
+
+    /** Remarks button looks "on" while remarks are being printed. */
+    private fun updateRemarksButton() {
+        binding.remarksButton.alpha = if (config.stampRemarks.isBlank()) INACTIVE_ALPHA else 1f
+    }
+
+    private val hideZoomSlider = Runnable {
+        if (binding.zoomSlider.isVisible()) {
+            TransitionManager.beginDelayedTransition(binding.zoomBar)
+            binding.zoomSlider.beGone()
+        }
+    }
+
+    /** Shows the slider and hides it again once zooming has stopped for a moment. */
+    private fun showZoomSlider() = binding.apply {
+        if (!zoomSlider.isVisible()) {
+            TransitionManager.beginDelayedTransition(zoomBar)
+            zoomSlider.beVisible()
+        }
+        zoomBar.removeCallbacks(hideZoomSlider)
+        zoomBar.postDelayed(hideZoomSlider, ZOOM_SLIDER_HIDE_DELAY_MS)
+    }
+
+    private var lastZoomRatio: Float? = null
+    private var stampFreeBottom = 0f
+    private var lastCutoutTop = 0
+
+    private fun liftZoomBar() = binding.run {
+        zoomBar.post {
+            val gap = resources.getDimension(org.fossify.commons.R.dimen.small_margin)
+            zoomBar.translationY = (stampOverlay.top + stampFreeBottom - gap - zoomBar.bottom).coerceAtMost(0f)
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onZoomChanged(minRatio: Float, maxRatio: Float, ratio: Float) = binding.run {
+        if (maxRatio - minRatio < MIN_ZOOM_SPAN) {
+            zoomBar.beGone()
+            return@run
+        }
+        zoomBar.beVisible()
+        liftZoomBar()
+        val previous = lastZoomRatio
+        lastZoomRatio = ratio
+        if (previous != null && abs(previous - ratio) > ZOOM_EPSILON) showZoomSlider()
+        if (zoomSlider.valueFrom != minRatio || zoomSlider.valueTo != maxRatio) {
+            // Widen first so the current value is never outside the range while updating.
+            zoomSlider.valueFrom = minOf(minRatio, zoomSlider.valueFrom)
+            zoomSlider.valueTo = maxOf(maxRatio, zoomSlider.valueTo)
+            zoomSlider.value = ratio.coerceIn(minRatio, maxRatio)
+            zoomSlider.valueFrom = minRatio
+            zoomSlider.valueTo = maxRatio
+        }
+        if (!zoomSlider.isPressed) zoomSlider.value = ratio.coerceIn(minRatio, maxRatio)
+        zoomValue.text = String.format(Locale.US, "%.1f×", ratio)
+    }
+
     override fun displaySelectedResolution(resolutionOption: ResolutionOption) {
         val imageRes = resolutionOption.imageDrawableResId
         binding.layoutTop.changeResolution.setShadowIcon(imageRes)
@@ -930,7 +1189,7 @@ class MainActivity : SimpleActivity(), PhotoProcessor.MediaSavedListener, Camera
             intArrayOf(android.R.attr.state_checked)
         )
         val iconColors = intArrayOf(
-            ContextCompat.getColor(this, org.fossify.commons.R.color.md_grey_white),
+            controlColor(),
             primaryColor
         )
         button.iconTint = ColorStateList(states, iconColors)

@@ -12,6 +12,7 @@ androidx-camera = "1.6.1"
 androidx-ktx = "2.10.0"
 #Fossify
 commons = "6.1.6"
+zxing = "3.5.3"
 #Gradle
 gradlePlugins-agp = "9.4.1"
 #build
@@ -36,6 +37,7 @@ androidx-documentfile = { module = "androidx.documentfile:documentfile", version
 compose-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektCompose" }
 #Fossify
 fossify-commons = { module = "org.fossify:commons", version.ref = "commons" }
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
 [bundles]
 androidx-camera = [
     "androidx-camera-core",

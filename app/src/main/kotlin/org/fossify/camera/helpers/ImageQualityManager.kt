@@ -16,6 +16,7 @@ class ImageQualityManager(private val activity: AppCompatActivity) {
     companion object {
         private val CAMERA_LENS =
             arrayOf(CameraCharacteristics.LENS_FACING_FRONT, CameraCharacteristics.LENS_FACING_BACK)
+        private const val MAX_SIZES_PER_ASPECT = 4
     }
 
     private val cameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -60,32 +61,54 @@ class ImageQualityManager(private val activity: AppCompatActivity) {
     }
 
     fun getUserSelectedResolution(cameraSelector: CameraSelector): MySize {
+        val aspect = getUserSelectedAspect(cameraSelector)
+        val sizes = getSizesForAspect(cameraSelector, aspect)
+        val isFrontCamera = cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA
+        val sizeIndex = mediaSizeStore.getPhotoSizeIndex(isFrontCamera)
+        val size = sizes.getOrNull(sizeIndex) ?: sizes.firstOrNull() ?: return aspect
+        return size.copy(isFullScreen = aspect.isFullScreen)
+    }
+
+    /** The selected entry of [getSupportedResolutions]; defaults to the largest 4:3 size. */
+    private fun getUserSelectedAspect(cameraSelector: CameraSelector): MySize {
         val resolutions = getSupportedResolutions(cameraSelector)
         val isFrontCamera = cameraSelector == CameraSelector.DEFAULT_FRONT_CAMERA
         var index = mediaSizeStore.getCurrentSizeIndex(
             isPhotoCapture = true, isFrontCamera = isFrontCamera
         )
+        if (index == PHOTO_RESOLUTION_UNSET && resolutions.isNotEmpty()) {
+            index = resolutions.indexOfFirst { it.getAspectRatio(activity) == "4:3" }
+                .coerceAtLeast(0)
+            mediaSizeStore.storeSize(isPhotoCapture = true, isFrontCamera = isFrontCamera, currentIndex = index)
+        }
         index = index.coerceAtMost(resolutions.lastIndex).coerceAtLeast(0)
         return resolutions[index]
     }
 
-    fun getSupportedResolutions(cameraSelector: CameraSelector): List<MySize> {
-        val fullScreenSize = getFullScreenResolution(cameraSelector) ?: return ArrayList()
-        return listOf(fullScreenSize) + imageQualities.filter { it.camSelector == cameraSelector }
+    /** All sizes sharing [aspect]'s ratio, largest first, one per megapixel label. */
+    fun getSizesForAspect(cameraSelector: CameraSelector, aspect: MySize): List<MySize> {
+        val ratio = aspect.getAspectRatio(activity)
+        return imageQualities.filter { it.camSelector == cameraSelector }
             .flatMap { it.qualities }
+            .filter { it.getAspectRatio(activity) == ratio }
+            .sortedByDescending { it.pixels }
+            .distinctBy { it.megaPixelLabel() }
+            .take(MAX_SIZES_PER_ASPECT)
+    }
+
+    /** Sizes for the currently selected aspect ratio, for the megapixel selector. */
+    fun getSizesForSelectedAspect(cameraSelector: CameraSelector): List<MySize> =
+        getSizesForAspect(cameraSelector, getUserSelectedAspect(cameraSelector))
+
+    /** One entry per aspect ratio (4:3, 16:9, 1:1), largest first. No full-screen mode. */
+    fun getSupportedResolutions(cameraSelector: CameraSelector): List<MySize> {
+        return imageQualities.filter { it.camSelector == cameraSelector }
+            .flatMap { it.qualities }
+            .filter { it.isSupported(false) }
             .sortedByDescending { it.pixels }
             .distinctBy { it.getAspectRatio(activity) }
             .sortedByDescending {
                 it.getAspectRatio(activity).split(":").firstOrNull()?.toIntOrNull()
             }
-            .filter { it.isSupported(fullScreenSize.isSixteenToNine()) }
-    }
-
-    private fun getFullScreenResolution(cameraSelector: CameraSelector): MySize? {
-        return imageQualities.filter { it.camSelector == cameraSelector }
-            .flatMap { it.qualities }
-            .sortedByDescending { it.width }
-            .firstOrNull { it.isSupported(false) }
-            ?.copy(isFullScreen = true)
     }
 }

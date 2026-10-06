@@ -15,12 +15,12 @@ import kotlin.math.roundToLong
 class AddressResolver(context: Context) {
 
     private val geocoder = Geocoder(context.applicationContext, Locale.getDefault())
-    private val cache = ConcurrentHashMap<String, String>()
+    private val cache = ConcurrentHashMap<String, ResolvedAddress>()
 
     /** Returns a cached address without any lookup, or null. */
-    fun cached(latitude: Double, longitude: Double): String? = cache[key(latitude, longitude)]
+    fun cached(latitude: Double, longitude: Double): ResolvedAddress? = cache[key(latitude, longitude)]
 
-    fun resolve(latitude: Double, longitude: Double, callback: (String?) -> Unit) {
+    fun resolve(latitude: Double, longitude: Double, callback: (ResolvedAddress?) -> Unit) {
         val key = key(latitude, longitude)
         cache[key]?.let { return callback(it) }
 
@@ -55,9 +55,16 @@ class AddressResolver(context: Context) {
         }
     }
 
-    private fun format(address: Address): String? {
+    private fun format(address: Address): ResolvedAddress? {
         val lines = (0..address.maxAddressLineIndex).mapNotNull { address.getAddressLine(it) }
-        return lines.joinToString(", ").ifBlank { null }
+        val full = lines.joinToString(", ").ifBlank { null } ?: return null
+        val city = address.locality ?: address.subAdminArea ?: address.subLocality
+        val headline = listOfNotNull(city, address.adminArea, address.countryName)
+            .filter { it.isNotBlank() }
+            .distinct()
+            .joinToString(", ")
+            .ifBlank { null }
+        return ResolvedAddress(full, headline, city)
     }
 
     companion object {
@@ -67,3 +74,6 @@ class AddressResolver(context: Context) {
             "${(latitude * KEY_SCALE).roundToLong()},${(longitude * KEY_SCALE).roundToLong()}"
     }
 }
+
+/** [full] is the complete postal address, [headline] e.g. "Kasganj, Uttar Pradesh, India". */
+data class ResolvedAddress(val full: String, val headline: String?, val city: String?)

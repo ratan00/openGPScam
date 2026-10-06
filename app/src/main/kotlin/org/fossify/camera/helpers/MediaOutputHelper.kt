@@ -50,7 +50,8 @@ class MediaOutputHelper(
     private var config = activity.config
     private val contentResolver = activity.contentResolver
 
-    fun getImageMediaOutput(): MediaOutput.ImageCaptureOutput {
+    /** [baseName] is the file name without extension; null gives the default IMG_<timestamp>. */
+    fun getImageMediaOutput(baseName: String? = null): MediaOutput.ImageCaptureOutput {
         return try {
             if (is3rdPartyIntent) {
                 if (outputUri != null) {
@@ -59,17 +60,17 @@ class MediaOutputHelper(
                         MediaOutput.OutputStreamMediaOutput(outputStream, outputUri)
                     } else {
                         errorHandler.showSaveToInternalStorage()
-                        getMediaStoreOutput(isPhoto = true)
+                        getMediaStoreOutput(isPhoto = true, baseName)
                     }
                 } else {
                     MediaOutput.BitmapOutput
                 }
             } else {
-                getOutputStreamMediaOutput() ?: getMediaStoreOutput(isPhoto = true)
+                getOutputStreamMediaOutput(baseName) ?: getMediaStoreOutput(isPhoto = true, baseName)
             }
         } catch (e: Exception) {
             errorHandler.showSaveToInternalStorage()
-            getMediaStoreOutput(isPhoto = true)
+            getMediaStoreOutput(isPhoto = true, baseName)
         }
     }
 
@@ -110,8 +111,8 @@ class MediaOutputHelper(
         }
     }
 
-    private fun getMediaStoreOutput(isPhoto: Boolean): MediaOutput.MediaStoreOutput {
-        val contentValues = getContentValues(isPhoto)
+    private fun getMediaStoreOutput(isPhoto: Boolean, baseName: String? = null): MediaOutput.MediaStoreOutput {
+        val contentValues = getContentValues(isPhoto, baseName)
         val contentUri = if (isPhoto) {
             MediaStore.Images.Media.getContentUri(EXTERNAL_VOLUME)
         } else {
@@ -121,10 +122,10 @@ class MediaOutputHelper(
     }
 
     @Suppress("DEPRECATION")
-    private fun getContentValues(isPhoto: Boolean): ContentValues {
+    private fun getContentValues(isPhoto: Boolean, baseName: String?): ContentValues {
         val mimeType = if (isPhoto) IMAGE_MIME_TYPE else VIDEO_MIME_TYPE
         return ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, getRandomMediaName(isPhoto))
+            put(MediaStore.MediaColumns.DISPLAY_NAME, baseName ?: getRandomMediaName(isPhoto))
             put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
             if (isQPlus()) {
                 put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
@@ -138,15 +139,15 @@ class MediaOutputHelper(
         }
     }
 
-    private fun getOutputStreamMediaOutput(): MediaOutput.OutputStreamMediaOutput? {
+    private fun getOutputStreamMediaOutput(baseName: String?): MediaOutput.OutputStreamMediaOutput? {
         var mediaOutput: MediaOutput.OutputStreamMediaOutput? = null
         val canWrite = canWriteToFilePath(config.savePhotosFolder)
         if (canWrite) {
-            val path = activity.getOutputMediaFilePath(true)
+            val path = activity.getOutputMediaFilePath(true, baseName)
             val uri = getUriForFilePath(path)
             val outputStream = activity.getFileOutputStreamSync(path, path.getMimeType())
             if (uri != null && outputStream != null) {
-                mediaOutput = MediaOutput.OutputStreamMediaOutput(outputStream, uri)
+                mediaOutput = MediaOutput.OutputStreamMediaOutput(outputStream, uri, path)
             }
         }
         return mediaOutput

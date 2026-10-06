@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.SensorManager
 import android.hardware.display.DisplayManager
+import android.location.Location
 import android.os.Handler
 import android.os.Looper
 import android.util.Rational
@@ -84,6 +85,7 @@ import org.fossify.camera.helpers.PinchToZoomOnScaleGestureListener
 import org.fossify.camera.helpers.SimpleLocationManager
 import org.fossify.camera.stamp.StampController
 import org.fossify.camera.stamp.StampData
+import org.fossify.camera.stamp.StampFormatter
 import org.fossify.camera.stamp.StampJob
 import org.fossify.camera.stamp.StampOverlayView
 import java.time.ZonedDateTime
@@ -222,8 +224,11 @@ class CameraXPreview(
         val resolution = if (isPhotoCapture) {
             imageQualityManager.getUserSelectedResolution(cameraSelector).also {
                 listener.displaySelectedResolution(it.toResolutionOption())
+                val sizes = imageQualityManager.getSizesForSelectedAspect(cameraSelector)
+                listener.displayPhotoSize(if (sizes.size > 1) it.megaPixelLabel() else null)
             }
         } else {
+            listener.displayPhotoSize(null)
             val selectedQuality = videoQualityManager.getUserSelectedQuality(cameraSelector).also {
                 listener.displaySelectedResolution(it.toResolutionOption())
             }
@@ -231,6 +236,7 @@ class CameraXPreview(
         }
 
         listener.adjustPreviewView(resolution.requiresCentering())
+        activity.findViewById<StampOverlayView>(R.id.stamp_overlay)?.setContentSize(resolution.width, resolution.height)
 
         val isFullSize = resolution.isFullScreen
         previewView.scaleType = if (isFullSize) ScaleType.FILL_CENTER else ScaleType.FIT_CENTER
@@ -238,8 +244,12 @@ class CameraXPreview(
         val targetResolution = Size(resolution.width, resolution.height)
 
         val previewUseCase = buildPreview(targetResolution, rotation)
-        val captureUseCase = getCaptureUseCase(targetResolution, rotation)
+        // The orientation listener only reacts to changes, so a use case created while the phone
+        // is already held sideways must start from the last seen device rotation, not the
+        // (portrait-locked) display rotation (upstream FossifyOrg/Camera#294).
+        val captureUseCase = getCaptureUseCase(targetResolution, lastRotation)
 
+        camera?.cameraInfo?.zoomState?.removeObservers(activity)
         cameraProvider.unbindAll()
         camera = if (isFullSize) {
             val metrics = windowMetricsCalculator.computeCurrentWindowMetrics(activity).bounds
@@ -267,6 +277,9 @@ class CameraXPreview(
             )
         }
         preview = previewUseCase
+        camera?.cameraInfo?.zoomState?.observe(activity) {
+            listener.onZoomChanged(it.minZoomRatio, it.maxZoomRatio, it.zoomRatio)
+        }
         setupZoomAndFocus()
         setFlashlightState(config.flashlightState)
     }
@@ -530,6 +543,35 @@ class CameraXPreview(
         }
     }
 
+    override fun showPhotoSizes() {
+        if (!isPhotoCapture) return
+        val sizes = imageQualityManager.getSizesForSelectedAspect(cameraSelector)
+        if (sizes.size < 2) return
+        val isFront = isFrontCameraInUse()
+        val selected = mediaSizeStore.getPhotoSizeIndex(isFront).coerceIn(0, sizes.lastIndex)
+        val options = sizes.map { "${it.megaPixelLabel().removeSuffix("M")} MP · ${it.width}×${it.height}" }
+        listener.showPhotoSizeMenu(options, selected) { index ->
+            if (index != selected) {
+                mediaSizeStore.storePhotoSizeIndex(isFront, index)
+                startCamera()
+            }
+        }
+    }
+
+    override fun refreshLocation(callback: (Location?) -> Unit) {
+        val controller = stampController
+        val locations = simpleLocationManager
+        when {
+            controller != null -> controller.refreshLocation(callback)
+            locations != null -> locations.requestFreshFix(callback)
+            else -> callback(null)
+        }
+    }
+
+    override fun setZoomRatio(ratio: Float) {
+        camera?.cameraControl?.setZoomRatio(ratio)
+    }
+
     private fun toggleResolutions(resolutions: List<ResolutionOption>) {
         if (resolutions.size >= 2) {
             val currentIndex =
@@ -632,14 +674,17 @@ class CameraXPreview(
                 ),
                 minimap = snapshot?.minimap,
                 settings = config.stampSettings,
+                watermarkIcon = snapshot?.watermarkIcon,
             )
         } else {
             null
         }
 
-        val mediaOutput = mediaOutputHelper.getImageMediaOutput()
+        // Organisation_City_2026-10-06_224320.jpg for stamped photos.
+        val baseName = stampJob?.let { StampFormatter.fileName(it.data, it.settings) }
+        val mediaOutput = mediaOutputHelper.getImageMediaOutput(baseName)
         val originalOutput = if (stampJob != null && config.stampKeepOriginal) {
-            mediaOutputHelper.getImageMediaOutput()
+            mediaOutputHelper.getImageMediaOutput(baseName?.let { "${it}_original" })
         } else {
             null
         }
@@ -663,6 +708,7 @@ class CameraXPreview(
                         } else {
                             if (originalOutput != null) {
                                 ImageSaver.saveImage(
+                                    appContext = activity.applicationContext,
                                     contentResolver = contentResolver,
                                     image = image,
                                     mediaOutput = originalOutput,
@@ -675,6 +721,7 @@ class CameraXPreview(
                                 )
                             }
                             ImageSaver.saveImage(
+                                appContext = activity.applicationContext,
                                 contentResolver = contentResolver,
                                 image = image,
                                 mediaOutput = mediaOutput,

@@ -73,6 +73,53 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/camera_mode_holder" />
 
+    <LinearLayout
+        android:id="@+id/zoom_bar"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/big_margin"
+        android:paddingEnd="@dimen/big_margin"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/camera_mode_holder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/zoom_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/zoom_value_background"
+            android:contentDescription="@string/zoom"
+            android:gravity="center"
+            android:minWidth="52dp"
+            android:paddingHorizontal="@dimen/medium_margin"
+            android:paddingVertical="@dimen/small_margin"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:text="1.0×" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/zoom_slider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_weight="1"
+            android:contentDescription="@string/zoom"
+            android:visibility="gone"
+            android:valueFrom="1"
+            android:valueTo="2"
+            app:labelBehavior="gone"
+            app:thumbColor="@android:color/white"
+            app:trackColorActive="@android:color/white"
+            app:trackColorInactive="#66FFFFFF"
+            app:tickVisible="false" />
+
+    </LinearLayout>
+
     <RelativeLayout
         android:id="@+id/camera_mode_holder"
         android:layout_width="wrap_content"
@@ -160,5 +207,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/shutter"
         app:layout_constraintTop_toTopOf="@id/shutter" />
+
+    <ImageView
+        android:id="@+id/refresh_gps"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/camera_button_background"
+        android:contentDescription="@string/refresh_gps"
+        android:padding="9dp"
+        android:src="@drawable/ic_gps_refresh_vector"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:layout_marginBottom="@dimen/big_margin"
+        app:layout_constraintBottom_toBottomOf="@id/camera_mode_holder"
+        app:layout_constraintEnd_toEndOf="@id/last_photo_video_preview"
+        app:layout_constraintStart_toStartOf="@id/last_photo_video_preview"
+        app:layout_constraintTop_toTopOf="@id/camera_mode_holder" />
+
+    <ImageView
+        android:id="@+id/remarks_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/camera_button_background"
+        android:contentDescription="@string/stamp_remarks"
+        android:padding="9dp"
+        android:src="@drawable/ic_remarks_vector"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:layout_marginBottom="@dimen/big_margin"
+        app:layout_constraintBottom_toBottomOf="@id/camera_mode_holder"
+        app:layout_constraintEnd_toEndOf="@id/toggle_camera"
+        app:layout_constraintStart_toStartOf="@id/toggle_camera"
+        app:layout_constraintTop_toTopOf="@id/camera_mode_holder" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

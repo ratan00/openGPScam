@@ -20,6 +20,8 @@ sealed class MediaOutput(
     data class OutputStreamMediaOutput(
         val outputStream: OutputStream,
         override val uri: Uri,
+        /** Real file path when known, so the file can be handed to the media scanner. */
+        val path: String? = null,
     ) : MediaOutput(uri), ImageCaptureOutput
 
     data class FileDescriptorMediaOutput(

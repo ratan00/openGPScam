@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Câmera</string>
     <string name="camera_unavailable">Câmera indisponível</string>
     <string name="camera_open_error">Ocorreu um erro ao aceder à câmera</string>
     <string name="video_creating_error">Ocorreu um erro ao criar o ficheiro de vídeo</string>

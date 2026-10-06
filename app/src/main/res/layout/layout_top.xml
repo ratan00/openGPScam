@@ -38,6 +38,32 @@
         tools:icon="@drawable/ic_photo_4x3_vector" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/change_megapixels"
+        style="@style/Widget.App.Button.OutlineButton.IconOnly"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:contentDescription="@string/photo_megapixels"
+        android:padding="@dimen/normal_margin"
+        android:shadowColor="#99000000"
+        android:shadowRadius="4"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:text="12M" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/toggle_qr"
+        style="@style/Widget.App.Button.OutlineButton.IconOnly"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:contentDescription="@string/stamp_qr_toggle"
+        android:padding="@dimen/normal_margin"
+        app:icon="@drawable/ic_qr_vector" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/settings"
         style="@style/Widget.App.Button.OutlineButton.IconOnly"
         android:layout_width="0dp"

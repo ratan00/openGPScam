@@ -33,7 +33,6 @@
     <string name="view_last_media">अंतिम कैप्चर किया गया मीडिया देखें</string>
     <string name="toggle_camera">फ्रंट/बैक कैमरा टॉगल करें</string>
     <string name="faq_1_text">यह आपके लक्ष्य पर निर्भर करता है. सामान्य उद्देश्यों के लिए अधिकांश लोग 75%-80% का उपयोग करने की सलाह देते हैं, जब छवि अभी भी वास्तव में अच्छी गुणवत्ता वाली होती है, लेकिन फ़ाइल का आकार 100% की तुलना में काफी कम हो जाता है।</string>
-    <string name="app_launcher_name">कैमरा</string>
     <string name="photo_capture_failed">फ़ोटो कैप्चर विफल रहा</string>
     <string name="toggle_flash">फ़्लैशलाइट मोड टॉगल करें</string>
     <string name="toggle_timer">टाइमर मोड टॉगल करें</string>

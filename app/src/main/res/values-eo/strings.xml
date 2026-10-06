@@ -4,7 +4,6 @@
     <string name="camera_configure_error">Okazis eraro dum agordado de kamerao</string>
     <string name="camera_disabled_by_admin_error">Kamerao estas elŝaltita de administrulo</string>
     <string name="photo_capture_failed">Fotografado malsukcesis</string>
-    <string name="app_launcher_name">Kamerao</string>
     <string name="faq_1_text">Tio dependas de via celo. Por la ĝenerala uzado, oni konsilas uzi 75%-80%, kie la bilda kvalito restas bone, sed la dosiergrando estas ege reduktita komparata al 100%.</string>
     <string name="show_preview">Montri fotan antaŭrigardon post kapto</string>
     <string name="capture_mode">Kaptoreĝimo</string>
