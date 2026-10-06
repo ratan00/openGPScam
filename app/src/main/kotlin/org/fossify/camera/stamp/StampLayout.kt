@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber") // layout ratios and unit conversions
+
 package org.fossify.camera.stamp
 
 import kotlin.math.max

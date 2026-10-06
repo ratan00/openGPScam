@@ -1,1 +1,1 @@
-Lightweight open-source camera app for quick, easy, and secure photography
+Open-source camera that stamps a GPS map, address and time on every photo

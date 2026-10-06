@@ -78,17 +78,17 @@ Put new code under `org.fossify.camera.stamp` (or after the rename, `org.opengps
    - [x] Local SDK: platforms 34+36, build-tools 34+36, JDK 17
    - [x] Upstream history merged into this repo (`upstream` remote)
    - [x] `./gradlew assembleFossDebug` builds (with rebrand); occasional Maven Central 429s, just retry
-   - [~] Rebrand: `APP_ID=org.opengpscam` and app name done (Kotlin namespace stays `org.fossify.camera` for now); icon and README still to do
-1. **Location**: permission flow, extended LocationProvider, accuracy and "waiting for GPS"
+   - [x] Rebrand: `APP_ID=org.opengpscam`, app name, README, F-Droid text (Kotlin namespace stays `org.fossify.camera`; launcher icon is still Fossify's)
+1. **Location** ✅: permission flow, extended LocationProvider, accuracy and "waiting for GPS"
    indicator, AddressResolver with cache
-2. **Stamping (text only)**: StampData snapshot at the shutter press, PhotoStamper hooked
+2. **Stamping (text only)** ✅: StampData snapshot at the shutter press, PhotoStamper hooked
    into `ImageSaver`. Handle rotation and front-camera mirroring correctly, and set EXIF
    orientation to NORMAL after rotating the pixels. Test portrait/landscape × front/back × resolutions.
-3. **Minimap**: MinimapRenderer + tile cache + fallback card, composited into the strip
-4. **Live overlay** on the viewfinder
-5. **Settings**: toggle each field, 12h/24h, decimal/DMS coordinates, strip position
+3. **Minimap** ✅: MinimapRenderer + tile cache + fallback card, composited into the strip
+4. **Live overlay** ✅ on the viewfinder
+5. **Settings** ✅: toggle each field, 12h/24h, decimal/DMS coordinates, strip position
    (top/bottom) and opacity, map on/off, keep an unstamped original too, stamp on/off
-6. **Polish & release**
+6. **Polish & release** — partly done: stamping runs off the main thread, OOM falls back to `inSampleSize`, unit tests for formatting/layout, README/attribution/F-Droid text. Still open: golden-image tests, on-device verification, new icon, signed release
    - Never block the shutter: if the fix is old, use the last known one and mark it stale
    - Stamp on a background thread
    - Memory: a 50 MP ARGB bitmap is about 200 MB → `inSampleSize` or tiled processing on low-RAM devices

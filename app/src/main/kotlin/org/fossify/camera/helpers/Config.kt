@@ -121,7 +121,7 @@ class Config(context: Context) : BaseConfig(context) {
         set(value) = prefs.edit().putBoolean(STAMP_KEEP_ORIGINAL, value).apply()
 
     var stampOpacity: Int
-        get() = prefs.getInt(STAMP_OPACITY, 55)
+        get() = prefs.getInt(STAMP_OPACITY, StampSettings.DEFAULT_OPACITY)
         set(value) = prefs.edit().putInt(STAMP_OPACITY, value).apply()
 
     val stampSettings: StampSettings

@@ -32,6 +32,7 @@ import java.util.*
  * Inspired by
  * @see androidx.camera.core.ImageSaver
  * */
+@Suppress("LongParameterList")
 class ImageSaver private constructor(
     private val contentResolver: ContentResolver,
     private val image: ImageProxy,
@@ -87,6 +88,7 @@ class ImageSaver private constructor(
     }
 
     @SuppressLint("RestrictedApi")
+    @Suppress("NestedBlockDepth", "CyclomaticComplexMethod")
     private fun saveImageToTempFile(): File? {
         var saveError: SaveError? = null
         var errorMessage: String? = null
@@ -122,21 +124,7 @@ class ImageSaver private constructor(
                 ExifInterface(inputStream).copyTo(exifInterface)
 
                 if (stampedBitmapSize != null) {
-                    // Rotation and mirroring are already applied to the pixels.
-                    exifInterface.setAttribute(
-                        ExifInterface.TAG_ORIENTATION,
-                        ExifInterface.ORIENTATION_NORMAL.toString()
-                    )
-                    exifInterface.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, stampedBitmapSize.first.toString())
-                    exifInterface.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, stampedBitmapSize.second.toString())
-                    exifInterface.setAttribute(ExifInterface.TAG_PIXEL_X_DIMENSION, stampedBitmapSize.first.toString())
-                    exifInterface.setAttribute(ExifInterface.TAG_PIXEL_Y_DIMENSION, stampedBitmapSize.second.toString())
-                    stamp?.let {
-                        exifInterface.setAttribute(
-                            ExifInterface.TAG_IMAGE_DESCRIPTION,
-                            StampFormatter.summary(it.data, it.settings)
-                        )
-                    }
+                    applyStampedExif(exifInterface, stampedBitmapSize)
                 } else {
                     // Overwrite the original orientation if the quirk exists.
                     if (!ExifRotationAvailability().shouldUseExifOrientation(image)) {
@@ -195,10 +183,24 @@ class ImageSaver private constructor(
         return tempFile
     }
 
+    /** Rotation and mirroring are already in the pixels, so the file is upright with a fresh size. */
+    private fun applyStampedExif(exif: ExifInterface, size: Pair<Int, Int>) {
+        val (width, height) = size
+        exif.setAttribute(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL.toString())
+        exif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, width.toString())
+        exif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, height.toString())
+        exif.setAttribute(ExifInterface.TAG_PIXEL_X_DIMENSION, width.toString())
+        exif.setAttribute(ExifInterface.TAG_PIXEL_Y_DIMENSION, height.toString())
+        stamp?.let {
+            exif.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, StampFormatter.summary(it.data, it.settings))
+        }
+    }
+
     /**
      * Decodes [jpeg], bakes in rotation/mirroring, draws the strip and writes the result to
      * [target]. Returns the final (width, height), or null to fall back to the unstamped JPEG.
      */
+    @SuppressLint("RestrictedApi")
     private fun stampJpeg(jpeg: ByteArray, job: StampJob, target: File): Pair<Int, Int>? {
         var sample = 1
         while (sample <= MAX_SAMPLE_SIZE) {

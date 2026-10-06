@@ -8,6 +8,7 @@ import org.fossify.camera.databinding.ActivitySettingsBinding
 import org.fossify.camera.extensions.checkLocationPermission
 import org.fossify.camera.extensions.config
 import org.fossify.camera.models.CaptureMode
+import org.fossify.camera.stamp.StampSettings
 import org.fossify.commons.dialogs.*
 import org.fossify.commons.extensions.*
 import org.fossify.commons.helpers.*
@@ -265,7 +266,7 @@ class SettingsActivity : SimpleActivity() {
 
         updateStampOpacity(config.stampOpacity)
         settingsStampOpacityHolder.setOnClickListener {
-            val items = arrayListOf(100, 85, 70, 55, 40, 25).map { RadioItem(it, "$it%") }
+            val items = StampSettings.OPACITY_CHOICES.map { RadioItem(it, "$it%") }
             RadioGroupDialog(this@SettingsActivity, ArrayList(items), config.stampOpacity) {
                 config.stampOpacity = it as Int
                 updateStampOpacity(it)

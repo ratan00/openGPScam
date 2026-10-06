@@ -1,50 +1,39 @@
-# Fossify Camera
+# OpenGPS Cam
 
-<img alt="Logo" src="graphics/icon.webp" width="120" />
+An open-source, ad-free Android camera that burns a GPS label into every photo: a minimap, the
+address, latitude/longitude and the date, time and timezone, on a semi-transparent strip. The same
+text is written into the JPEG's EXIF description.
 
-<a href='https://play.google.com/store/apps/details?id=org.fossify.camera'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height=80/></a> <a href="https://f-droid.org/packages/org.fossify.camera/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on-en.svg" alt="Get it on F-Droid" height=80/></a> <a href="https://apt.izzysoft.de/fdroid/index/apk/org.fossify.camera"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height=80/></a>
+- Live preview of the label over the viewfinder, drawn by the same code as the saved photo
+- Never blocks the shutter: the location, address and map are prepared in the background, and an
+  old fix is used and marked "(last known)"
+- Offline-friendly: no address means coordinates only, no map tiles means a simple grid card
+- Settings: each field on/off, 12/24-hour time, decimal or DMS coordinates, strip at top or bottom,
+  opacity, minimap on/off, and an option to keep an unstamped original too
+- No ads, no analytics, no Play Services. Location is read only while the camera is open
 
-Fossify Camera is your go-to app for capturing life’s moments with precision and privacy. Whether
-you’re snapping photos or recording videos, this fully customizable, privacy-respecting camera app
-is designed to meet your needs.
+## Network use
 
-**📸 YOUR PRIVACY, OUR PRIORITY:**  
-With the Fossify Camera app, your data remains private. Enjoy a camera that works without internet
-access or intrusive permissions, ensuring your photos and videos stay secure.
+The only network access is fetching a handful of OpenStreetMap tiles around your position for the
+minimap (identifying User-Agent, on-disk cache, no prefetching, in line with the
+[OSM tile usage policy](https://operations.osmfoundation.org/policies/tiles/)). Turn the minimap off
+in settings and the app never goes online. Addresses come from the system `Geocoder`.
 
-**🚀 SEAMLESS PERFORMANCE:**  
-Fossify Camera provides a fluid and responsive interface. Switch between photo and video modes,
-adjust zoom, and toggle between front and rear cameras instantly. Capture moments with zero lag and
-experience smooth performance at all times.
+Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) (ODbL). The strip
+carries the "© OpenStreetMap" credit whenever a real map is shown.
 
-**🖼️ COMPLETE CUSTOMIZATION:**  
-Personalize every aspect of your camera experience. Adjust the output quality, customize the save
-path, and set the resolution to suit your needs. You can even customize colors and themes to match
-your style.
+## Building
 
-**⚡ DYNAMIC CONTROLS:**  
-Toggle settings with ease—control flash, aspect ratio, and zoom directly from the camera view. The
-app is designed for quick access, letting you capture moments efficiently, with intuitive controls.
+```
+echo "sdk.dir=/path/to/android-sdk" > local.properties   # platforms;android-36, build-tools;36.0.0
+./gradlew assembleFossDebug          # app/build/outputs/apk/foss/debug/
+./gradlew detekt lintFossDebug testFossDebugUnitTest
+```
 
-**🖼️ MATERIAL DESIGN:**  
-Enjoy a sleek, user-friendly interface with material design and a dynamic theme that adapts to your
-preferences. Whether you're using the app during the day or at night, Fossify Camera provides a
-smooth and intuitive experience.
+Camera and GPS need a real phone: `adb install -r <apk>`. See [PLAN.md](PLAN.md) for the design.
 
-**🌐 OPEN-SOURCE ASSURANCE:**  
-Fossify Camera is built on an open-source foundation. With our commitment to transparency, you can
-review the code on GitHub and be part of a community that values privacy and trust.
+## Credits and license
 
-Fossify Camera offers everything you need to capture moments effortlessly while respecting your
-privacy.
-
-➡️ Explore more Fossify apps: https://www.fossify.org<br>
-➡️ Open-Source Code: https://www.github.com/FossifyOrg<br>
-➡️ Join the community on Reddit: https://www.reddit.com/r/Fossify<br>
-➡️ Connect on Telegram: https://t.me/Fossify
-
-<div align="center">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width="30%">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width="30%">
-<img alt="App image" src="fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width="30%">
-</div>
+A fork of [Fossify Camera](https://github.com/FossifyOrg/Camera). Licensed under the
+[GNU GPL v3.0](LICENSE); upstream history is kept, and the `upstream` remote can be used to merge
+future changes.

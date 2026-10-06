@@ -7,6 +7,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.SystemClock
 import androidx.annotation.RequiresPermission
+import java.util.concurrent.TimeUnit
 import org.fossify.camera.extensions.checkLocationPermission
 import org.fossify.commons.activities.BaseSimpleActivity
 
@@ -51,7 +52,7 @@ class SimpleLocationManager(private val activity: BaseSimpleActivity) {
     /** True when there is no fix, or the newest one is older than [STALE_AFTER_MS]. */
     fun isStale(location: Location? = getLocation()): Boolean {
         location ?: return true
-        val ageMs = (SystemClock.elapsedRealtimeNanos() - location.elapsedRealtimeNanos) / 1_000_000
+        val ageMs = TimeUnit.NANOSECONDS.toMillis(SystemClock.elapsedRealtimeNanos() - location.elapsedRealtimeNanos)
         return ageMs > STALE_AFTER_MS
     }
 

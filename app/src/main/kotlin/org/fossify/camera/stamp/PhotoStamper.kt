@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber") // layout ratios and unit conversions
+
 package org.fossify.camera.stamp
 
 import android.graphics.Bitmap
@@ -28,6 +30,7 @@ object PhotoStamper {
     }
 
     /** Draws the strip into [canvas] covering a [width] x [height] area at its origin. */
+    @Suppress("CyclomaticComplexMethod")
     fun drawStrip(
         canvas: Canvas,
         width: Int,

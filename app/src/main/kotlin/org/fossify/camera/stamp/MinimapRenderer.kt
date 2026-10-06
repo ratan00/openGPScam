@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber") // layout ratios and unit conversions
+
 package org.fossify.camera.stamp
 
 import android.content.Context
@@ -71,7 +73,8 @@ class MinimapRenderer(context: Context, private val userAgent: String) {
             BitmapFactory.decodeFile(file.path)?.let { return it }
         }
         return try {
-            val conn = (URL("https://tile.openstreetmap.org/$ZOOM/$x/$y.png").openConnection() as HttpURLConnection).apply {
+            val url = URL("https://tile.openstreetmap.org/$ZOOM/$x/$y.png")
+            val conn = (url.openConnection() as HttpURLConnection).apply {
                 connectTimeout = TIMEOUT_MS
                 readTimeout = TIMEOUT_MS
                 setRequestProperty("User-Agent", userAgent)

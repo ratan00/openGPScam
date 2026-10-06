@@ -9,5 +9,10 @@ data class StampSettings(
     val use24Hour: Boolean = true,
     val useDms: Boolean = false,
     val atTop: Boolean = false,
-    val opacityPercent: Int = 55,
-)
+    val opacityPercent: Int = DEFAULT_OPACITY,
+) {
+    companion object {
+        const val DEFAULT_OPACITY = 55
+        val OPACITY_CHOICES = listOf(100, 85, 70, DEFAULT_OPACITY, 40, 25)
+    }
+}

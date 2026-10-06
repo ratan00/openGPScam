@@ -145,4 +145,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.window)
     detektPlugins(libs.compose.detekt)
+    testImplementation("junit:junit:4.13.2")
 }
