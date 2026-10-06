@@ -3,13 +3,12 @@
 [![Download latest APK](https://img.shields.io/github/v/release/ratan00/OpenGPSCam?label=Download%20APK&logo=android&logoColor=white&color=3DDC84&style=for-the-badge)](https://github.com/ratan00/OpenGPSCam/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/ratan00/OpenGPSCam/total?style=for-the-badge&color=blue)](https://github.com/ratan00/OpenGPSCam/releases)
 
-An open-source, ad-free Android camera that burns a GPS label into every photo: a minimap, the
-address, latitude/longitude and the date, time and timezone, on a semi-transparent strip. The same
-text is written into the JPEG's EXIF description.
+An open-source, *ad-free* Android camera that Overlays a GPS label in live photo: a minimap, the
+address, latitude/longitude and the date, time and timezone.
+The same is written into the JPEG's EXIF data.
 
-- Live preview of the label over the viewfinder, drawn by the same code as the saved photo
-- Never blocks the shutter: the location, address and map are prepared in the background, and an
-  old fix is used and marked "(last known)"
+- Live preview of the label over the viewfinder
+- More than just location tagging, tag officer name and picture information too.
 - Offline-friendly: no address means coordinates only, no map tiles means a simple grid card
 - Settings: each field on/off, 12/24-hour time, decimal or DMS coordinates, strip at top or bottom,
   opacity, minimap on/off, and an option to keep an unstamped original too
