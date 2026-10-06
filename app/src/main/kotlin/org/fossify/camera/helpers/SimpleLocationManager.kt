@@ -5,6 +5,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.annotation.RequiresPermission
 import org.fossify.camera.extensions.checkLocationPermission
 import org.fossify.commons.activities.BaseSimpleActivity
@@ -14,6 +15,7 @@ class SimpleLocationManager(private val activity: BaseSimpleActivity) {
     companion object {
         private const val LOCATION_UPDATE_MIN_TIME_INTERVAL_MS = 5000L
         private const val LOCATION_UPDATE_MIN_DISTANCE_M = 10F
+        const val STALE_AFTER_MS = 2 * 60 * 1000L
     }
 
     private var location: Location? = null
@@ -40,6 +42,13 @@ class SimpleLocationManager(private val activity: BaseSimpleActivity) {
         }
 
         return location
+    }
+
+    /** True when there is no fix, or the newest one is older than [STALE_AFTER_MS]. */
+    fun isStale(location: Location? = getLocation()): Boolean {
+        location ?: return true
+        val ageMs = (SystemClock.elapsedRealtimeNanos() - location.elapsedRealtimeNanos) / 1_000_000
+        return ageMs > STALE_AFTER_MS
     }
 
     private fun getLastKnownLocation(): Location? {
