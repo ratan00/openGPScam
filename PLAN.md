@@ -76,8 +76,9 @@ Put new code under `org.fossify.camera.stamp` (or after the rename, `org.opengps
 0. **Setup** ✅ partly done
    - [x] Fork Fossify Camera, keeping its history
    - [x] Local SDK: platforms 34+36, build-tools 34+36, JDK 17
-   - [ ] `./gradlew assembleFossDebug` builds the unmodified app
-   - [ ] Rebrand: `APP_ID=org.opengpscam` (or similar), app name, icon, README
+   - [x] Upstream history merged into this repo (`upstream` remote)
+   - [ ] `./gradlew assembleFossDebug` builds the unmodified app — **blocked**: cloud network policy denies `www.jitpack.io` (needed for `org.fossify:commons`); Maven Central also rate-limits (429) occasionally. Android SDK is at `/opt/android-sdk`, JDK 21 works as far as plugin resolution goes
+   - [~] Rebrand: `APP_ID=org.opengpscam` and app name done; icon and README still to do
 1. **Location**: permission flow, extended LocationProvider, accuracy and "waiting for GPS"
    indicator, AddressResolver with cache
 2. **Stamping (text only)**: StampData snapshot at the shutter press, PhotoStamper hooked
