@@ -3,6 +3,9 @@ package org.fossify.camera.helpers
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentValues
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.camera.core.ImageCapture
@@ -15,6 +18,9 @@ import org.fossify.camera.helpers.ImageUtil.CodecFailedException
 import org.fossify.camera.helpers.ImageUtil.imageToJpegByteArray
 import org.fossify.camera.helpers.ImageUtil.jpegImageToJpegByteArray
 import org.fossify.camera.models.MediaOutput
+import org.fossify.camera.stamp.AddressResolver
+import org.fossify.camera.stamp.PhotoStamper
+import org.fossify.camera.stamp.StampData
 import org.fossify.commons.extensions.copyTo
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.helpers.isQPlus
@@ -32,6 +38,8 @@ class ImageSaver private constructor(
     private val metadata: Metadata,
     private val jpegQuality: Int,
     private val saveExifAttributes: Boolean,
+    private val stampData: StampData?,
+    private val addressResolver: AddressResolver?,
     private val onImageSaved: (Uri) -> Unit,
     private val onError: (ImageCaptureException) -> Unit,
 ) {
@@ -50,6 +58,8 @@ class ImageSaver private constructor(
             metadata: Metadata,
             jpegQuality: Int,
             saveExifAttributes: Boolean,
+            stampData: StampData?,
+            addressResolver: AddressResolver?,
             onImageSaved: (Uri) -> Unit,
             onError: (ImageCaptureException) -> Unit,
         ) = ImageSaver(
@@ -59,6 +69,8 @@ class ImageSaver private constructor(
             metadata = metadata,
             jpegQuality = jpegQuality,
             saveExifAttributes = saveExifAttributes,
+            stampData = stampData,
+            addressResolver = addressResolver,
             onImageSaved = onImageSaved,
             onError = onError,
         ).saveImage()
@@ -127,6 +139,10 @@ class ImageSaver private constructor(
 
                 exifInterface.saveAttributes()
             }
+
+            if (stampData != null) {
+                applyStamp(tempFile, stampData)
+            }
         } catch (e: IOException) {
             saveError = SaveError.FILE_IO_FAILED
             errorMessage = "Failed to write temp file"
@@ -162,6 +178,83 @@ class ImageSaver private constructor(
         }
 
         return tempFile
+    }
+
+    /**
+     * Bakes the orientation into the pixels, draws the stamp strip and re-encodes the file.
+     * The EXIF orientation is reset to NORMAL afterwards; other EXIF attributes are preserved.
+     * If anything fails the unstamped photo is kept rather than losing the capture.
+     */
+    private fun applyStamp(tempFile: File, data: StampData) {
+        var bitmap: Bitmap? = null
+        var rotated: Bitmap? = null
+        try {
+            val orientation = ExifInterface(tempFile).getAttributeInt(
+                ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL
+            )
+
+            bitmap = BitmapFactory.decodeFile(tempFile.absolutePath) ?: return
+            rotated = applyOrientation(bitmap, orientation)
+
+            val lat = data.latitude
+            val lng = data.longitude
+            val resolved = if (data.address == null && lat != null && lng != null) {
+                data.copy(address = addressResolver?.resolve(lat, lng))
+            } else {
+                data
+            }
+
+            PhotoStamper.stamp(rotated, resolved)
+
+            val oldExif = if (saveExifAttributes) ByteArrayInputStream(tempFile.readBytes()) else null
+            FileOutputStream(tempFile).use { rotated.compress(Bitmap.CompressFormat.JPEG, jpegQuality, it) }
+
+            if (oldExif != null) {
+                val newExif = ExifInterface(tempFile)
+                ExifInterface(oldExif).copyTo(newExif)
+                newExif.setAttribute(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL.toString())
+                newExif.setAttribute(ExifInterface.TAG_PIXEL_X_DIMENSION, rotated.width.toString())
+                newExif.setAttribute(ExifInterface.TAG_PIXEL_Y_DIMENSION, rotated.height.toString())
+                newExif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, rotated.width.toString())
+                newExif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, rotated.height.toString())
+                newExif.saveAttributes()
+            }
+        } catch (e: IOException) {
+            // keep the photo as it was
+        } catch (e: OutOfMemoryError) {
+            // keep the photo as it was
+        } finally {
+            if (rotated != null && rotated !== bitmap) rotated.recycle()
+            bitmap?.recycle()
+        }
+    }
+
+    private fun applyOrientation(source: Bitmap, orientation: Int): Bitmap {
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+            ExifInterface.ORIENTATION_TRANSPOSE -> {
+                matrix.postRotate(90f)
+                matrix.postScale(-1f, 1f)
+            }
+            ExifInterface.ORIENTATION_TRANSVERSE -> {
+                matrix.postRotate(270f)
+                matrix.postScale(-1f, 1f)
+            }
+        }
+        val out = if (matrix.isIdentity) {
+            source
+        } else {
+            Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+        }
+        if (out.isMutable) {
+            return out
+        }
+        return out.copy(Bitmap.Config.ARGB_8888, true).also { if (out !== source) out.recycle() }
     }
 
     /**

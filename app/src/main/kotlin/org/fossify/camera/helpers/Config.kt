@@ -83,6 +83,10 @@ class Config(context: Context) : BaseConfig(context) {
         set(savePhotoVideoLocation) = prefs.edit()
             .putBoolean(SAVE_PHOTO_VIDEO_LOCATION, savePhotoVideoLocation).apply()
 
+    var stampPhotos: Boolean
+        get() = prefs.getBoolean(STAMP_PHOTOS, true)
+        set(stampPhotos) = prefs.edit().putBoolean(STAMP_PHOTOS, stampPhotos).apply()
+
     var photoQuality: Int
         get() = prefs.getInt(PHOTO_QUALITY, 80)
         set(photoQuality) = prefs.edit().putInt(PHOTO_QUALITY, photoQuality).apply()

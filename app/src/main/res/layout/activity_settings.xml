@@ -217,6 +217,21 @@
                 </RelativeLayout>
 
                 <RelativeLayout
+                    android:id="@+id/settings_stamp_photos_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_photos"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_photos" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:id="@+id/settings_save_photo_video_location_holder"
                     style="@style/SettingsHolderCheckboxStyle"
                     android:layout_width="match_parent"

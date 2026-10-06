@@ -44,6 +44,7 @@ class SettingsActivity : SimpleActivity() {
         setupFlipPhotos()
         setupSavePhotoMetadata()
         setupSavePhotoVideoLocation()
+        setupStampPhotos()
         setupSavePhotosFolder()
         setupPhotoQuality()
         setupCaptureMode()
@@ -182,6 +183,23 @@ class SettingsActivity : SimpleActivity() {
         settingsSavePhotoMetadataHolder.setOnClickListener {
             settingsSavePhotoMetadata.toggle()
             config.savePhotoMetadata = settingsSavePhotoMetadata.isChecked
+        }
+    }
+
+    private fun setupStampPhotos() = binding.apply {
+        settingsStampPhotos.isChecked = config.stampPhotos
+        settingsStampPhotosHolder.setOnClickListener {
+            val enable = !config.stampPhotos
+            if (enable && !checkLocationPermission()) {
+                handlePermission(PERMISSION_ACCESS_FINE_LOCATION) { _ ->
+                    // The stamp still works without a fix: it falls back to date and time only.
+                    config.stampPhotos = true
+                    settingsStampPhotos.isChecked = true
+                }
+            } else {
+                config.stampPhotos = enable
+                settingsStampPhotos.isChecked = enable
+            }
         }
     }
 

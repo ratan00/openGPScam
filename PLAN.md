@@ -76,11 +76,11 @@ Put new code under `org.fossify.camera.stamp` (or after the rename, `org.opengps
 0. **Setup** ✅ partly done
    - [x] Fork Fossify Camera, keeping its history
    - [x] Local SDK: platforms 34+36, build-tools 34+36, JDK 17
-   - [ ] `./gradlew assembleFossDebug` builds the unmodified app
-   - [ ] Rebrand: `APP_ID=org.opengpscam` (or similar), app name, icon, README
+   - [ ] `./gradlew assembleFossDebug` builds the unmodified app (blocked in the cloud box: `dl.google.com` is denied by the network policy, so the Android SDK can't be installed)
+   - [~] Rebrand: `APP_ID=org.opengpscam` and launcher name done; icon and README still to do
 1. **Location**: permission flow, extended LocationProvider, accuracy and "waiting for GPS"
    indicator, AddressResolver with cache
-2. **Stamping (text only)**: StampData snapshot at the shutter press, PhotoStamper hooked
+2. **Stamping (text only)** — first cut written, untested (no SDK to compile): StampData snapshot at the shutter press, PhotoStamper hooked
    into `ImageSaver`. Handle rotation and front-camera mirroring correctly, and set EXIF
    orientation to NORMAL after rotating the pixels. Test portrait/landscape × front/back × resolutions.
 3. **Minimap**: MinimapRenderer + tile cache + fallback card, composited into the strip

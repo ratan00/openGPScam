@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Camera</string>
+    <string name="app_launcher_name">OpenGPS Cam</string>
     <string name="capture_mode">Capture mode</string>
     <string name="maximize_quality">Maximize quality</string>
     <string name="minimize_latency">Minimize latency</string>
@@ -49,6 +49,7 @@
     <string name="keep_settings_visible">Keep the setting buttons visible</string>
     <string name="always_open_back_camera">Always open the app with the Back camera</string>
     <string name="save_photo_metadata">Save photo exif metadata</string>
+    <string name="stamp_photos">Stamp location, address and time on photos</string>
     <string name="save_photo_video_location">Save photo and video location</string>
     <string name="photo_compression_quality">Photo compression quality</string>
     <string name="shutter">Shutter</string>

@@ -81,6 +81,9 @@ import org.fossify.camera.helpers.MediaSizeStore
 import org.fossify.camera.helpers.MediaSoundHelper
 import org.fossify.camera.helpers.PinchToZoomOnScaleGestureListener
 import org.fossify.camera.helpers.SimpleLocationManager
+import org.fossify.camera.stamp.AddressResolver
+import org.fossify.camera.stamp.StampData
+import java.time.ZonedDateTime
 import org.fossify.camera.helpers.VideoQualityManager
 import org.fossify.camera.interfaces.MyPreview
 import org.fossify.camera.models.CaptureMode
@@ -105,6 +108,7 @@ class CameraXPreview(
 ) : MyPreview, DefaultLifecycleObserver {
 
     companion object {
+        private const val STALE_FIX_MS = 2 * 60 * 1000L
         // Auto focus is 1/6 of the area.
         private const val AF_SIZE = 1.0f / 6.0f
         private const val AE_SIZE = AF_SIZE * 1.5f
@@ -181,6 +185,7 @@ class CameraXPreview(
     private var lastRotation = 0
     private var lastCameraStartTime = 0L
     private var simpleLocationManager: SimpleLocationManager? = null
+    private val addressResolver by lazy { AddressResolver(activity) }
 
     init {
         bindToLifeCycle()
@@ -433,12 +438,28 @@ class CameraXPreview(
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        if (config.savePhotoVideoLocation) {
+        if (config.savePhotoVideoLocation || config.stampPhotos) {
             if (simpleLocationManager == null) {
                 simpleLocationManager = SimpleLocationManager(activity)
             }
             requestLocationUpdates()
         }
+    }
+
+    private fun captureStampData(): StampData? {
+        if (!config.stampPhotos) {
+            return null
+        }
+
+        val location = simpleLocationManager?.getLocation()
+        return StampData(
+            latitude = location?.latitude,
+            longitude = location?.longitude,
+            accuracyMeters = location?.takeIf { it.hasAccuracy() }?.accuracy,
+            address = null,
+            time = ZonedDateTime.now(),
+            isStale = location != null && System.currentTimeMillis() - location.time > STALE_FIX_MS,
+        )
     }
 
     private fun requestLocationUpdates() {
@@ -590,6 +611,7 @@ class CameraXPreview(
             }
         }
 
+        val stampData = captureStampData()
         val mediaOutput = mediaOutputHelper.getImageMediaOutput()
         imageCapture!!.takePicture(mainExecutor, object : OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
@@ -616,6 +638,8 @@ class CameraXPreview(
                                 metadata = metadata,
                                 jpegQuality = config.photoQuality,
                                 saveExifAttributes = config.savePhotoMetadata,
+                                stampData = stampData,
+                                addressResolver = addressResolver,
                                 onImageSaved = { savedUri ->
                                     activity.runOnUiThread {
                                         listener.onPhotoCaptureEnd()
