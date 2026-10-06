@@ -49,6 +49,17 @@
     <string name="keep_settings_visible">Keep the setting buttons visible</string>
     <string name="always_open_back_camera">Always open the app with the Back camera</string>
     <string name="save_photo_metadata">Save photo exif metadata</string>
+    <string name="stamp_section">Location stamp</string>
+    <string name="stamp_enabled">Stamp location on photos</string>
+    <string name="stamp_show_map">Show minimap</string>
+    <string name="stamp_show_address">Show address</string>
+    <string name="stamp_show_coordinates">Show coordinates</string>
+    <string name="stamp_show_date_time">Show date and time</string>
+    <string name="stamp_24_hour">Use 24-hour time</string>
+    <string name="stamp_dms">Show coordinates as degrees/minutes/seconds</string>
+    <string name="stamp_at_top">Place label at the top</string>
+    <string name="stamp_keep_original">Also keep an unstamped original</string>
+    <string name="stamp_opacity">Label opacity</string>
     <string name="save_photo_video_location">Save photo and video location</string>
     <string name="photo_compression_quality">Photo compression quality</string>
     <string name="shutter">Shutter</string>

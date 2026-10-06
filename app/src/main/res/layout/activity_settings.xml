@@ -269,6 +269,171 @@
 
                 </RelativeLayout>
 
+                <TextView
+                    android:id="@+id/settings_stamp_label"
+                    style="@style/SettingsSectionLabelStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stamp_section" />
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_enabled_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_enabled"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_enabled" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_show_map_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_show_map"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_show_map" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_show_address_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_show_address"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_show_address" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_show_coordinates_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_show_coordinates"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_show_coordinates" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_show_date_time_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_show_date_time"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_show_date_time" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_24_hour_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_24_hour"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_24_hour" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_dms_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_dms"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_dms" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_at_top_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_at_top"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_at_top" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_keep_original_holder"
+                    style="@style/SettingsHolderCheckboxStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/settings_stamp_keep_original"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_keep_original" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_stamp_opacity_holder"
+                    style="@style/SettingsHolderTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_opacity_label"
+                        style="@style/SettingsTextLabelStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stamp_opacity" />
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/settings_stamp_opacity"
+                        style="@style/SettingsTextValueStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/settings_stamp_opacity_label"
+                        tools:text="55%" />
+
+                </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/settings_photo_quality_holder"
                     style="@style/SettingsHolderTextViewStyle"

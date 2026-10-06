@@ -44,6 +44,7 @@ class SettingsActivity : SimpleActivity() {
         setupFlipPhotos()
         setupSavePhotoMetadata()
         setupSavePhotoVideoLocation()
+        setupStamp()
         setupSavePhotosFolder()
         setupPhotoQuality()
         setupCaptureMode()
@@ -56,6 +57,7 @@ class SettingsActivity : SimpleActivity() {
                 settingsGeneralSettingsLabel,
                 settingsCameraLabel,
                 settingsSavingLabel,
+                settingsStampLabel,
             ).forEach {
                 it.setTextColor(properPrimaryColor)
             }
@@ -239,6 +241,41 @@ class SettingsActivity : SimpleActivity() {
                 FeatureLockedDialog(this@SettingsActivity) { }
             }
         }
+    }
+
+    private fun setupStamp() = binding.apply {
+        val toggles = listOf(
+            Triple(settingsStampEnabled, settingsStampEnabledHolder, config::stampEnabled),
+            Triple(settingsStampShowMap, settingsStampShowMapHolder, config::stampShowMap),
+            Triple(settingsStampShowAddress, settingsStampShowAddressHolder, config::stampShowAddress),
+            Triple(settingsStampShowCoordinates, settingsStampShowCoordinatesHolder, config::stampShowCoordinates),
+            Triple(settingsStampShowDateTime, settingsStampShowDateTimeHolder, config::stampShowDateTime),
+            Triple(settingsStamp24Hour, settingsStamp24HourHolder, config::stamp24Hour),
+            Triple(settingsStampDms, settingsStampDmsHolder, config::stampDms),
+            Triple(settingsStampAtTop, settingsStampAtTopHolder, config::stampAtTop),
+            Triple(settingsStampKeepOriginal, settingsStampKeepOriginalHolder, config::stampKeepOriginal),
+        )
+        toggles.forEach { (switch, holder, prop) ->
+            switch.isChecked = prop.get()
+            holder.setOnClickListener {
+                switch.toggle()
+                prop.set(switch.isChecked)
+            }
+        }
+
+        updateStampOpacity(config.stampOpacity)
+        settingsStampOpacityHolder.setOnClickListener {
+            val items = arrayListOf(100, 85, 70, 55, 40, 25).map { RadioItem(it, "$it%") }
+            RadioGroupDialog(this@SettingsActivity, ArrayList(items), config.stampOpacity) {
+                config.stampOpacity = it as Int
+                updateStampOpacity(it)
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateStampOpacity(opacity: Int) {
+        binding.settingsStampOpacity.text = "$opacity%"
     }
 
     private fun setupPhotoQuality() {

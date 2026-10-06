@@ -61,6 +61,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.window.layout.WindowMetricsCalculator
 import com.bumptech.glide.load.ImageHeaderParser.UNKNOWN_ORIENTATION
+import org.fossify.camera.BuildConfig
 import org.fossify.camera.R
 import org.fossify.camera.extensions.checkLocationPermission
 import org.fossify.camera.extensions.config
@@ -81,6 +82,11 @@ import org.fossify.camera.helpers.MediaSizeStore
 import org.fossify.camera.helpers.MediaSoundHelper
 import org.fossify.camera.helpers.PinchToZoomOnScaleGestureListener
 import org.fossify.camera.helpers.SimpleLocationManager
+import org.fossify.camera.stamp.StampController
+import org.fossify.camera.stamp.StampData
+import org.fossify.camera.stamp.StampJob
+import org.fossify.camera.stamp.StampOverlayView
+import java.time.ZonedDateTime
 import org.fossify.camera.helpers.VideoQualityManager
 import org.fossify.camera.interfaces.MyPreview
 import org.fossify.camera.models.CaptureMode
@@ -181,6 +187,7 @@ class CameraXPreview(
     private var lastRotation = 0
     private var lastCameraStartTime = 0L
     private var simpleLocationManager: SimpleLocationManager? = null
+    private var stampController: StampController? = null
 
     init {
         bindToLifeCycle()
@@ -433,12 +440,30 @@ class CameraXPreview(
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        if (config.savePhotoVideoLocation) {
+        if (config.needsLocation) {
             if (simpleLocationManager == null) {
                 simpleLocationManager = SimpleLocationManager(activity)
             }
             requestLocationUpdates()
         }
+        setupStampController()
+    }
+
+    private fun setupStampController() {
+        val locations = simpleLocationManager ?: return
+        val overlay = activity.findViewById<StampOverlayView>(R.id.stamp_overlay)
+        if (!config.stampEnabled) {
+            overlay?.unbind()
+            return
+        }
+        val controller = stampController ?: StampController(
+            context = activity,
+            locations = locations,
+            showMap = { config.stampShowMap },
+            userAgent = "OpenGPSCam/${BuildConfig.VERSION_NAME} (+https://github.com/ratan00/openGPScam)",
+        ).also { stampController = it }
+        controller.start()
+        overlay?.bind(controller, { config.stampSettings })
     }
 
     private fun requestLocationUpdates() {
@@ -460,6 +485,8 @@ class CameraXPreview(
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
         simpleLocationManager?.dropLocationUpdates()
+        stampController?.stop()
+        activity.findViewById<StampOverlayView>(R.id.stamp_overlay)?.unbind()
     }
 
     override fun onStop(owner: LifecycleOwner) {
@@ -590,7 +617,32 @@ class CameraXPreview(
             }
         }
 
+        // Frozen at the shutter press so the label matches the moment of capture.
+        val stampJob = if (config.stampEnabled && !isThirdPartyIntent) {
+            val snapshot = stampController?.snapshot()
+            StampJob(
+                data = snapshot?.data ?: StampData(
+                    latitude = null,
+                    longitude = null,
+                    accuracyMeters = null,
+                    altitudeMeters = null,
+                    address = null,
+                    time = ZonedDateTime.now(),
+                    isStale = true,
+                ),
+                minimap = snapshot?.minimap,
+                settings = config.stampSettings,
+            )
+        } else {
+            null
+        }
+
         val mediaOutput = mediaOutputHelper.getImageMediaOutput()
+        val originalOutput = if (stampJob != null && config.stampKeepOriginal) {
+            mediaOutputHelper.getImageMediaOutput()
+        } else {
+            null
+        }
         imageCapture!!.takePicture(mainExecutor, object : OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 listener.shutterAnimation()
@@ -609,6 +661,19 @@ class CameraXPreview(
                                 }
                             }
                         } else {
+                            if (originalOutput != null) {
+                                ImageSaver.saveImage(
+                                    contentResolver = contentResolver,
+                                    image = image,
+                                    mediaOutput = originalOutput,
+                                    metadata = metadata,
+                                    jpegQuality = config.photoQuality,
+                                    saveExifAttributes = config.savePhotoMetadata,
+                                    stamp = null,
+                                    onImageSaved = { },
+                                    onError = ::handleImageCaptureError
+                                )
+                            }
                             ImageSaver.saveImage(
                                 contentResolver = contentResolver,
                                 image = image,
@@ -616,6 +681,7 @@ class CameraXPreview(
                                 metadata = metadata,
                                 jpegQuality = config.photoQuality,
                                 saveExifAttributes = config.savePhotoMetadata,
+                                stamp = stampJob,
                                 onImageSaved = { savedUri ->
                                     activity.runOnUiThread {
                                         listener.onPhotoCaptureEnd()

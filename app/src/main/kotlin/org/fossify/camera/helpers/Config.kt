@@ -5,6 +5,7 @@ import android.os.Environment
 import androidx.camera.core.CameraSelector
 import org.fossify.camera.models.CaptureMode
 import org.fossify.camera.models.TimerMode
+import org.fossify.camera.stamp.StampSettings
 import org.fossify.commons.helpers.BaseConfig
 import java.io.File
 
@@ -82,6 +83,62 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(SAVE_PHOTO_VIDEO_LOCATION, false)
         set(savePhotoVideoLocation) = prefs.edit()
             .putBoolean(SAVE_PHOTO_VIDEO_LOCATION, savePhotoVideoLocation).apply()
+
+    var stampEnabled: Boolean
+        get() = prefs.getBoolean(STAMP_ENABLED, true)
+        set(value) = prefs.edit().putBoolean(STAMP_ENABLED, value).apply()
+
+    var stampShowMap: Boolean
+        get() = prefs.getBoolean(STAMP_SHOW_MAP, true)
+        set(value) = prefs.edit().putBoolean(STAMP_SHOW_MAP, value).apply()
+
+    var stampShowAddress: Boolean
+        get() = prefs.getBoolean(STAMP_SHOW_ADDRESS, true)
+        set(value) = prefs.edit().putBoolean(STAMP_SHOW_ADDRESS, value).apply()
+
+    var stampShowCoordinates: Boolean
+        get() = prefs.getBoolean(STAMP_SHOW_COORDINATES, true)
+        set(value) = prefs.edit().putBoolean(STAMP_SHOW_COORDINATES, value).apply()
+
+    var stampShowDateTime: Boolean
+        get() = prefs.getBoolean(STAMP_SHOW_DATE_TIME, true)
+        set(value) = prefs.edit().putBoolean(STAMP_SHOW_DATE_TIME, value).apply()
+
+    var stamp24Hour: Boolean
+        get() = prefs.getBoolean(STAMP_24_HOUR, true)
+        set(value) = prefs.edit().putBoolean(STAMP_24_HOUR, value).apply()
+
+    var stampDms: Boolean
+        get() = prefs.getBoolean(STAMP_DMS, false)
+        set(value) = prefs.edit().putBoolean(STAMP_DMS, value).apply()
+
+    var stampAtTop: Boolean
+        get() = prefs.getBoolean(STAMP_AT_TOP, false)
+        set(value) = prefs.edit().putBoolean(STAMP_AT_TOP, value).apply()
+
+    var stampKeepOriginal: Boolean
+        get() = prefs.getBoolean(STAMP_KEEP_ORIGINAL, false)
+        set(value) = prefs.edit().putBoolean(STAMP_KEEP_ORIGINAL, value).apply()
+
+    var stampOpacity: Int
+        get() = prefs.getInt(STAMP_OPACITY, 55)
+        set(value) = prefs.edit().putInt(STAMP_OPACITY, value).apply()
+
+    val stampSettings: StampSettings
+        get() = StampSettings(
+            showMap = stampShowMap,
+            showAddress = stampShowAddress,
+            showCoordinates = stampShowCoordinates,
+            showDateTime = stampShowDateTime,
+            use24Hour = stamp24Hour,
+            useDms = stampDms,
+            atTop = stampAtTop,
+            opacityPercent = stampOpacity,
+        )
+
+    /** Location is only read while the camera is open and something needs it. */
+    val needsLocation: Boolean
+        get() = savePhotoVideoLocation || stampEnabled
 
     var photoQuality: Int
         get() = prefs.getInt(PHOTO_QUALITY, 80)

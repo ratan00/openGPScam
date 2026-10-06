@@ -20,12 +20,16 @@ class SimpleLocationManager(private val activity: BaseSimpleActivity) {
 
     private var location: Location? = null
 
+    /** Called on the main thread for each new fix from the system. */
+    var onLocationUpdate: ((Location) -> Unit)? = null
+
     private val locationManager = activity.getSystemService(LocationManager::class.java)!!
 
     @Suppress("EmptyFunctionBlock")
     private val locationListener = object: LocationListener {
         override fun onLocationChanged(location: Location) {
             this@SimpleLocationManager.location = location
+            onLocationUpdate?.invoke(location)
         }
 
         // No-op methods that must be overridden.

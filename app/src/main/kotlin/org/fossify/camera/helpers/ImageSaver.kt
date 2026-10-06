@@ -3,6 +3,10 @@ package org.fossify.camera.helpers
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentValues
+import android.graphics.Bitmap
+import android.graphics.ImageFormat
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.camera.core.ImageCapture
@@ -15,6 +19,9 @@ import org.fossify.camera.helpers.ImageUtil.CodecFailedException
 import org.fossify.camera.helpers.ImageUtil.imageToJpegByteArray
 import org.fossify.camera.helpers.ImageUtil.jpegImageToJpegByteArray
 import org.fossify.camera.models.MediaOutput
+import org.fossify.camera.stamp.PhotoStamper
+import org.fossify.camera.stamp.StampFormatter
+import org.fossify.camera.stamp.StampJob
 import org.fossify.commons.extensions.copyTo
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.helpers.isQPlus
@@ -32,6 +39,7 @@ class ImageSaver private constructor(
     private val metadata: Metadata,
     private val jpegQuality: Int,
     private val saveExifAttributes: Boolean,
+    private val stamp: StampJob?,
     private val onImageSaved: (Uri) -> Unit,
     private val onError: (ImageCaptureException) -> Unit,
 ) {
@@ -42,6 +50,7 @@ class ImageSaver private constructor(
         private const val COPY_BUFFER_SIZE = 1024
         private const val PENDING = 1
         private const val NOT_PENDING = 0
+        private const val MAX_SAMPLE_SIZE = 4
 
         fun saveImage(
             contentResolver: ContentResolver,
@@ -50,6 +59,7 @@ class ImageSaver private constructor(
             metadata: Metadata,
             jpegQuality: Int,
             saveExifAttributes: Boolean,
+            stamp: StampJob? = null,
             onImageSaved: (Uri) -> Unit,
             onError: (ImageCaptureException) -> Unit,
         ) = ImageSaver(
@@ -59,6 +69,7 @@ class ImageSaver private constructor(
             metadata = metadata,
             jpegQuality = jpegQuality,
             saveExifAttributes = saveExifAttributes,
+            stamp = stamp,
             onImageSaved = onImageSaved,
             onError = onError,
         ).saveImage()
@@ -98,27 +109,47 @@ class ImageSaver private constructor(
         }
 
         try {
-            val output = FileOutputStream(tempFile)
             val byteArray: ByteArray = imageToJpegByteArray(image, jpegQuality)
-            output.write(byteArray)
+            val stampedBitmapSize = stamp?.let { stampJpeg(byteArray, it, tempFile) }
+            if (stampedBitmapSize == null) {
+                FileOutputStream(tempFile).use { it.write(byteArray) }
+            }
 
-            if (saveExifAttributes) {
+            if (saveExifAttributes || stampedBitmapSize != null) {
                 val exifInterface = ExifInterface(tempFile)
                 val imageByteArray = jpegImageToJpegByteArray(image)
                 val inputStream: InputStream = ByteArrayInputStream(imageByteArray)
                 ExifInterface(inputStream).copyTo(exifInterface)
 
-                // Overwrite the original orientation if the quirk exists.
-                if (!ExifRotationAvailability().shouldUseExifOrientation(image)) {
-                    exifInterface.rotate(image.imageInfo.rotationDegrees)
-                }
+                if (stampedBitmapSize != null) {
+                    // Rotation and mirroring are already applied to the pixels.
+                    exifInterface.setAttribute(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL.toString()
+                    )
+                    exifInterface.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, stampedBitmapSize.first.toString())
+                    exifInterface.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, stampedBitmapSize.second.toString())
+                    exifInterface.setAttribute(ExifInterface.TAG_PIXEL_X_DIMENSION, stampedBitmapSize.first.toString())
+                    exifInterface.setAttribute(ExifInterface.TAG_PIXEL_Y_DIMENSION, stampedBitmapSize.second.toString())
+                    stamp?.let {
+                        exifInterface.setAttribute(
+                            ExifInterface.TAG_IMAGE_DESCRIPTION,
+                            StampFormatter.summary(it.data, it.settings)
+                        )
+                    }
+                } else {
+                    // Overwrite the original orientation if the quirk exists.
+                    if (!ExifRotationAvailability().shouldUseExifOrientation(image)) {
+                        exifInterface.rotate(image.imageInfo.rotationDegrees)
+                    }
 
-                if (metadata.isReversedHorizontal) {
-                    exifInterface.flipHorizontally()
-                }
+                    if (metadata.isReversedHorizontal) {
+                        exifInterface.flipHorizontally()
+                    }
 
-                if (metadata.isReversedVertical) {
-                    exifInterface.flipVertically()
+                    if (metadata.isReversedVertical) {
+                        exifInterface.flipVertically()
+                    }
                 }
 
                 if (metadata.location != null) {
@@ -162,6 +193,52 @@ class ImageSaver private constructor(
         }
 
         return tempFile
+    }
+
+    /**
+     * Decodes [jpeg], bakes in rotation/mirroring, draws the strip and writes the result to
+     * [target]. Returns the final (width, height), or null to fall back to the unstamped JPEG.
+     */
+    private fun stampJpeg(jpeg: ByteArray, job: StampJob, target: File): Pair<Int, Int>? {
+        var sample = 1
+        while (sample <= MAX_SAMPLE_SIZE) {
+            try {
+                val options = BitmapFactory.Options().apply { inSampleSize = sample }
+                val decoded = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size, options) ?: return null
+
+                val matrix = Matrix()
+                // Orientation the camera wrote into the JPEG, if any.
+                // Cropping re-encodes without EXIF, so read it from the camera's original JPEG.
+                val exifSource = if (image.format == ImageFormat.JPEG) jpegImageToJpegByteArray(image) else jpeg
+                val exif = ExifInterface(ByteArrayInputStream(exifSource))
+                matrix.postRotate(exif.rotationDegrees.toFloat())
+                if (exif.isFlipped) matrix.postScale(-1f, 1f)
+                // Same rules the unstamped path applies to the EXIF tag.
+                if (!ExifRotationAvailability().shouldUseExifOrientation(image)) {
+                    matrix.postRotate(image.imageInfo.rotationDegrees.toFloat())
+                }
+                if (metadata.isReversedHorizontal) matrix.postScale(-1f, 1f)
+                if (metadata.isReversedVertical) matrix.postScale(1f, -1f)
+
+                val oriented = if (matrix.isIdentity) {
+                    decoded
+                } else {
+                    Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, matrix, true)
+                        .also { if (it !== decoded) decoded.recycle() }
+                }
+                val stamped = PhotoStamper.stamp(oriented, job.data, job.minimap, job.settings)
+                FileOutputStream(target).use {
+                    stamped.compress(Bitmap.CompressFormat.JPEG, jpegQuality, it)
+                }
+                val size = stamped.width to stamped.height
+                stamped.recycle()
+                return size
+            } catch (_: OutOfMemoryError) {
+                // A 50 MP bitmap is ~200 MB; retry at half the resolution on low-memory devices.
+                sample *= 2
+            }
+        }
+        return null
     }
 
     /**
