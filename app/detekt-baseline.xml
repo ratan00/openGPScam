@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:MainActivity.kt$MainActivity$!mIsHardwareShutterHandled &amp;&amp; config.volumeButtonsAsShutter &amp;&amp; (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)</ID>
+    <ID>CyclomaticComplexMethod:CameraXPreview.kt$CameraXPreview$@SuppressLint("MissingPermission", "NewApi") private fun startRecording()</ID>
+    <ID>CyclomaticComplexMethod:ImageSaver.kt$ImageSaver$@SuppressLint("RestrictedApi") private fun saveImageToTempFile(): File?</ID>
+    <ID>CyclomaticComplexMethod:PhotoProcessor.kt$PhotoProcessor$override fun doInBackground(vararg params: ByteArray): String</ID>
+    <ID>EmptyFunctionBlock:FocusCircleView.kt$FocusCircleView${}</ID>
+    <ID>FunctionNaming:ImageUtil.kt$ImageUtil$private fun yuv_420_888toNv21(image: ImageProxy): ByteArray</ID>
+    <ID>ImplicitDefaultLocale:MySize.kt$MySize$String.format("%.1f", (width * height.toFloat()) / ONE_MEGA_PIXEL)</ID>
+    <ID>ImplicitDefaultLocale:VideoQuality.kt$VideoQuality$String.format("%.1f", (width * height.toFloat()) / ONE_MEGA_PIXEL)</ID>
+    <ID>LargeClass:MainActivity.kt$MainActivity : SimpleActivityMediaSavedListenerCameraXPreviewListener</ID>
+    <ID>LongParameterList:CameraXPreview.kt$CameraXPreview$( private val activity: BaseSimpleActivity, private val previewView: PreviewView, private val mediaSoundHelper: MediaSoundHelper, private val mediaOutputHelper: MediaOutputHelper, private val cameraErrorHandler: CameraErrorHandler, private val listener: CameraXPreviewListener, private val isThirdPartyIntent: Boolean, initInPhotoMode: Boolean, )</ID>
+    <ID>LongParameterList:ImageSaver.kt$ImageSaver$( private val contentResolver: ContentResolver, private val image: ImageProxy, private val mediaOutput: MediaOutput.ImageCaptureOutput, private val metadata: Metadata, private val jpegQuality: Int, private val saveExifAttributes: Boolean, private val onImageSaved: (Uri) -&gt; Unit, private val onError: (ImageCaptureException) -&gt; Unit, )</ID>
+    <ID>LoopWithTooManyJumpStatements:ImageQualityManager.kt$ImageQualityManager$for</ID>
+    <ID>LoopWithTooManyJumpStatements:MediaActionSound.kt$MediaActionSound$for</ID>
+    <ID>MagicNumber:BitmapUtils.kt$BitmapUtils$128</ID>
+    <ID>MagicNumber:BitmapUtils.kt$BitmapUtils$7</ID>
+    <ID>MagicNumber:BitmapUtils.kt$BitmapUtils$8</ID>
+    <ID>MagicNumber:CameraXPreview.kt$CameraXPreview.&lt;no name provided&gt;$135</ID>
+    <ID>MagicNumber:CameraXPreview.kt$CameraXPreview.&lt;no name provided&gt;$225</ID>
+    <ID>MagicNumber:CameraXPreview.kt$CameraXPreview.&lt;no name provided&gt;$315</ID>
+    <ID>MagicNumber:CameraXPreview.kt$CameraXPreview.&lt;no name provided&gt;$45</ID>
+    <ID>MagicNumber:Config.kt$Config$80</ID>
+    <ID>MagicNumber:Constants.kt$270</ID>
+    <ID>MagicNumber:Constants.kt$90</ID>
+    <ID>MagicNumber:FocusCircleView.kt$FocusCircleView$500L</ID>
+    <ID>MagicNumber:FocusCircleView.kt$FocusCircleView$50f</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity$90</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity.&lt;no name provided&gt;$134</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity.&lt;no name provided&gt;$225</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity.&lt;no name provided&gt;$289</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity.&lt;no name provided&gt;$75</ID>
+    <ID>MagicNumber:MainActivity.kt$MainActivity.&lt;no name provided&gt;$90</ID>
+    <ID>MagicNumber:MySize.kt$MySize$1.9f</ID>
+    <ID>MagicNumber:MySize.kt$MySize$16</ID>
+    <ID>MagicNumber:MySize.kt$MySize$19</ID>
+    <ID>MagicNumber:MySize.kt$MySize$3</ID>
+    <ID>MagicNumber:MySize.kt$MySize$3f</ID>
+    <ID>MagicNumber:MySize.kt$MySize$4</ID>
+    <ID>MagicNumber:MySize.kt$MySize$4f</ID>
+    <ID>MagicNumber:MySize.kt$MySize$5</ID>
+    <ID>MagicNumber:MySize.kt$MySize$5f</ID>
+    <ID>MagicNumber:MySize.kt$MySize$6</ID>
+    <ID>MagicNumber:MySize.kt$MySize$8f</ID>
+    <ID>MagicNumber:MySize.kt$MySize$9f</ID>
+    <ID>MagicNumber:PhotoProcessor.kt$PhotoProcessor$360</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$100</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$50</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$55</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$60</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$65</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$70</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$75</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$80</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$85</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$90</ID>
+    <ID>MagicNumber:SettingsActivity.kt$SettingsActivity$95</ID>
+    <ID>MagicNumber:ShadowDrawable.kt$ShadowDrawable$255.0f</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$1.9f</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$16</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$19</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$3</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$3f</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$4</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$4f</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$5</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$5f</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$6</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$8f</ID>
+    <ID>MagicNumber:VideoQuality.kt$VideoQuality$9f</ID>
+    <ID>MaxLineLength:CameraErrorHandler.kt$CameraErrorHandler$VideoRecordEvent.Finalize.ERROR_INSUFFICIENT_STORAGE -&gt; context.toast(R.string.video_capture_insufficient_storage_error)</ID>
+    <ID>MaxLineLength:ImageUtil.kt$ImageUtil$require(image.format == ImageFormat.YUV_420_888) { "Incorrect image format of the input image proxy: " + image.format }</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$if</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$}</ID>
+    <ID>MaxLineLength:SettingsActivity.kt$SettingsActivity$it.beGoneIf(settingsUseEnglishHolder.isGone() &amp;&amp; settingsPurchaseThankYouHolder.isGone() &amp;&amp; settingsLanguageHolder.isGone())</ID>
+    <ID>MaxLineLength:SettingsActivity.kt$SettingsActivity$settingsUseEnglishHolder.beVisibleIf((config.wasUseEnglishToggled || Locale.getDefault().language != "en") &amp;&amp; !isTiramisuPlus())</ID>
+    <ID>MaxLineLength:ShadowDrawable.kt$ShadowDrawable$if</ID>
+    <ID>NestedBlockDepth:ImageQualityManager.kt$ImageQualityManager$fun initSupportedQualities()</ID>
+    <ID>NestedBlockDepth:ImageSaver.kt$ImageSaver$private fun copyTempFileToDestination(tempFile: File)</ID>
+    <ID>NestedBlockDepth:MediaOutputHelper.kt$MediaOutputHelper$fun getImageMediaOutput(): MediaOutput.ImageCaptureOutput</ID>
+    <ID>NestedBlockDepth:MediaOutputHelper.kt$MediaOutputHelper$fun getVideoMediaOutput(): MediaOutput.VideoCaptureOutput</ID>
+    <ID>NestedBlockDepth:MediaOutputHelper.kt$MediaOutputHelper$private fun getUriForFilePath(path: String): Uri?</ID>
+    <ID>NestedBlockDepth:PhotoProcessor.kt$PhotoProcessor$override fun doInBackground(vararg params: ByteArray): String</ID>
+    <ID>NestedBlockDepth:VideoQualityManager.kt$VideoQualityManager$fun initSupportedQualities(cameraProvider: ProcessCameraProvider)</ID>
+    <ID>ReturnCount:PhotoProcessor.kt$PhotoProcessor$override fun doInBackground(vararg params: ByteArray): String</ID>
+    <ID>SwallowedException:BitmapUtils.kt$BitmapUtils$ex: OutOfMemoryError</ID>
+    <ID>SwallowedException:CameraXPreview.kt$CameraXPreview$e: Exception</ID>
+    <ID>SwallowedException:ImageUtil.kt$ImageUtil$e: IOException</ID>
+    <ID>SwallowedException:MediaOutputHelper.kt$MediaOutputHelper$e: Exception</ID>
+    <ID>SwallowedException:PhotoProcessor.kt$PhotoProcessor$e: Exception</ID>
+    <ID>SwallowedException:PhotoProcessor.kt$PhotoProcessor$e: OutOfMemoryError</ID>
+    <ID>ThrowsCount:ImageUtil.kt$ImageUtil$@Throws(CodecFailedException::class) private fun cropJpegByteArray( data: ByteArray, cropRect: Rect, @IntRange(from = 1, to = 100) jpegQuality: Int, ): ByteArray</ID>
+    <ID>TooGenericExceptionCaught:CameraXPreview.kt$CameraXPreview$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ImageQualityManager.kt$ImageQualityManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:MediaOutputHelper.kt$MediaOutputHelper$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PhotoProcessor.kt$PhotoProcessor$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:VideoQualityManager.kt$VideoQualityManager$e: Exception</ID>
+    <ID>TooManyFunctions:CameraXPreview.kt$CameraXPreview : MyPreviewDefaultLifecycleObserver</ID>
+    <ID>TooManyFunctions:CameraXPreviewListener.kt$CameraXPreviewListener</ID>
+    <ID>TooManyFunctions:MainActivity.kt$MainActivity : SimpleActivityMediaSavedListenerCameraXPreviewListener</ID>
+    <ID>TooManyFunctions:MediaOutputHelper.kt$MediaOutputHelper</ID>
+    <ID>TooManyFunctions:MySize.kt$MySize</ID>
+    <ID>TooManyFunctions:SettingsActivity.kt$SettingsActivity : SimpleActivity</ID>
+    <ID>TooManyFunctions:ShadowDrawable.kt$ShadowDrawable : Drawable</ID>
+    <ID>TooManyFunctions:VideoQuality.kt$VideoQuality</ID>
+    <ID>UnusedPrivateProperty:ImageUtil.kt$ImageUtil$col</ID>
+    <ID>UnusedPrivateProperty:ImageUtil.kt$ImageUtil$row</ID>
+    <ID>UseCheckOrError:CameraXPreview.kt$CameraXPreview$throw IllegalStateException("Camera initialization failed.")</ID>
+    <ID>UseCheckOrError:MainActivity.kt$MainActivity.&lt;no name provided&gt;$throw IllegalStateException("Unsupported tab position ${tab.position}")</ID>
+    <ID>VariableNaming:FocusCircleView.kt$FocusCircleView$private val CIRCLE_DURATION = 500L</ID>
+    <ID>VariableNaming:FocusCircleView.kt$FocusCircleView$private val CIRCLE_RADIUS = 50f</ID>
+    <ID>WildcardImport:ImageSaver.kt$import java.io.*</ID>
+    <ID>WildcardImport:ImageUtil.kt$import android.graphics.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import android.view.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import androidx.core.view.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import androidx.transition.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import org.fossify.camera.helpers.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import org.fossify.commons.extensions.*</ID>
+    <ID>WildcardImport:MainActivity.kt$import org.fossify.commons.helpers.*</ID>
+    <ID>WildcardImport:SettingsActivity.kt$import org.fossify.commons.dialogs.*</ID>
+    <ID>WildcardImport:SettingsActivity.kt$import org.fossify.commons.extensions.*</ID>
+    <ID>WildcardImport:SettingsActivity.kt$import org.fossify.commons.helpers.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

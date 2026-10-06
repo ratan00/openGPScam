@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:bottom="@dimen/small_margin"
+        android:top="@dimen/small_margin">
+        <shape>
+            <corners android:radius="@dimen/material_button_corner_radius" />
+            <solid android:color="@color/tab_color" />
+        </shape>
+    </item>
+</layer-list>

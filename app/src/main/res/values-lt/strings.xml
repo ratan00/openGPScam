@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_launcher_name">Kamera</string>
+    <string name="capture_mode">Fotografavimo veiksena</string>
+    <string name="maximize_quality">Pagerinti kokybę</string>
+    <string name="minimize_latency">Sumažinti delsą</string>
+    <string name="camera_unavailable">Kamera neprieinama</string>
+    <string name="camera_open_error">Bandant pasiekti kamerą įvyko klaida</string>
+    <string name="video_creating_error">Kuriant vaizdo įrašo failą įvyko klaida</string>
+    <string name="video_mode_error">Nepavyko perjungti į vaizdo įrašo veikseną</string>
+    <string name="save_error_internal_storage">Įvyko klaida, įrašymo aplankas pakeistas į vidinę atmintį</string>
+    <string name="camera_switch_error">Nepavyko perjungti kameros</string>
+    <string name="click_to_resume_preview">Norėdami pratęsti peržiūrą spustelėkite ant atvaizdo</string>
+    <string name="photo_not_saved">Nepavyko įrašyti nuotraukos</string>
+    <string name="setting_resolution_failed">Nepavyko nustatyti tinkamos raiškos</string>
+    <string name="video_recording_failed">Nepavyko įrašinėti vaizdo įrašo, pabandykite naudoti kitą raišką</string>
+    <string name="camera_in_use_error">Kamerą naudoja kita programėlė, užverkite programėlę ir bandykite dar kartą</string>
+    <string name="camera_configure_error">Konfigūruojant kamerą įvyko klaida</string>
+    <string name="camera_disabled_by_admin_error">Administratorius yra išjungęs kamerą</string>
+    <string name="camera_dnd_error">Yra įjungta veiksena „Netrukdyti“. Išjunkite ją ir bandykite dar kartą</string>
+    <string name="photo_capture_failed">Nepavyko padaryti nuotraukos</string>
+    <string name="video_capture_insufficient_storage_error">Vaizdo įrašymas dėl atminties trūkumo patyrė nesėkmę</string>
+    <string name="toggle_photo_video">Perjungti nuotraukos/vaizdo įrašo veikseną</string>
+    <string name="change_resolution">Keisti raišką</string>
+    <string name="view_last_media">Rodyti paskiausiai fiksuotą mediją</string>
+    <string name="toggle_camera">Perjungti priekinę/galinę kamerą</string>
+    <string name="toggle_flash">Perjungti žibintuvėlio veikseną</string>
+    <string name="toggle_timer">Perjungti laikmačio veikseną</string>
+    <string name="faq_1_title">Kokią nuotraukos glaudinimo kokybę turėčiau nustatyti\?</string>
+    <string name="faq_1_text">Tai priklauso nuo jūsų tikslų. Įprastiems tikslams dauguma žmonių pataria naudoti 75%–80%, kuomet nuotrauka yra vis dar geros kokybės, bet failo dydis, palyginus su 100%, iš esmės sumažėja.</string>
+    <string name="save_photos">Įrašyti nuotraukas ir vaizdo įrašus į</string>
+    <string name="show_preview">Rodyti nufotografuotų nuotraukų peržiūrą</string>
+    <string name="shutter_sound">Sklendės garsas</string>
+    <string name="back_camera">Galinės kameros raiška</string>
+    <string name="front_camera">Priekinės kameros raiška</string>
+    <string name="photo">Nuotrauka</string>
+    <string name="video">Vaizdo įrašas</string>
+    <string name="focus_before_capture">Fokusuoti prieš fotografuojant</string>
+    <string name="volume_buttons_as_shutter">Naudoti garso mygtukus kaip fotografavimo mygtuką</string>
+    <string name="turn_flash_off_at_startup">Paleidus kamerą išjungti žibintuvėlį</string>
+    <string name="flip_front_camera_photos_horizontally">Apversti priekinės kameros nuotraukas horizontaliai</string>
+    <string name="keep_settings_visible">Palikti nustatymų mygtukus matomus</string>
+    <string name="always_open_back_camera">Visada atverti programėlę su įjungta galine kamera</string>
+    <string name="save_photo_metadata">Įrašyti į nuotraukas EXIF metaduomenis</string>
+    <string name="photo_compression_quality">Nuotraukų glaudinimo kokybė</string>
+    <string name="shutter">Sklendė</string>
+</resources>
