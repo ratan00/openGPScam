@@ -1,10 +1,12 @@
+import com.android.build.api.instrumentation.FramesComputationMode
+import com.android.build.api.instrumentation.InstrumentationScope
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.konan.properties.Properties
 import java.io.FileInputStream
 
 plugins {
-    alias(libs.plugins.android)
+    id("com.android.application")
     alias(libs.plugins.detekt)
 }
 
@@ -127,6 +129,15 @@ android {
         language {
             enableSplit = false
         }
+    }
+}
+androidComponents {
+    onVariants { variant ->
+        // Removes the Fossify "fake version" warning, which is always a false alarm in this fork.
+        variant.instrumentation.transformClassesWith(FakeVersionCheckPatch::class.java, InstrumentationScope.ALL) {}
+        variant.instrumentation.setAsmFramesComputationMode(
+            FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS
+        )
     }
 }
 

@@ -1,4 +1,4 @@
 plugins {
-    alias(libs.plugins.android).apply(false)
+    id("com.android.application") apply false
     alias(libs.plugins.detekt).apply(false)
 }
