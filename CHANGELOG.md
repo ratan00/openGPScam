@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.6.0] - 2026-10-07
+## [1.0.0] - 2026-10-07
+First OpenGPS Cam release. Earlier entries below are from the upstream Fossify Camera project.
+
 ### Added
 - GPS stamp on photos: address, coordinates, compass heading, date/time, minimap, QR code and remarks
 - Officer card, watermark and About screen
