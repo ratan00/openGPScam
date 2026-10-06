@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-07
+### Added
+- GPS stamp on photos: address, coordinates, compass heading, date/time, minimap, QR code and remarks
+- Officer card, watermark and About screen
+
+### Changed
+- Faster stamping and saving: fewer full-size bitmap copies, shared camera JPEG, larger copy buffer
+- Minimap tiles load in parallel
+
 ## [1.5.0] - 2026-01-30
 ### Added
 - Added support for custom fonts
