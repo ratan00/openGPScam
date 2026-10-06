@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButtonToggleGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/timer_toggle_group"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    app:selectionRequired="true"
+    app:singleSelection="true"
+    tools:visibility="visible">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/timer_off"
+        style="@style/Widget.App.Button.OutlineButton.IconOnly"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:icon="@drawable/ic_timer_off_vector" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/timer_3s"
+        style="@style/Widget.App.Button.OutlineButton.IconOnly"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:icon="@drawable/ic_timer_3_vector" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/timer_5s"
+        style="@style/Widget.App.Button.OutlineButton.IconOnly"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:icon="@drawable/ic_timer_5_vector" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/timer_10_s"
+        style="@style/Widget.App.Button.OutlineButton.IconOnly"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:icon="@drawable/ic_timer_10_vector" />
+
+</com.google.android.material.button.MaterialButtonToggleGroup>

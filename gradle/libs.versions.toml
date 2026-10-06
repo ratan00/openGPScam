@@ -1,0 +1,50 @@
+[versions]
+#jetbrains
+kotlin = "2.3.10"
+#Detekt
+detekt = "1.23.8"
+detektCompose = "0.4.28"
+#Androidx
+androidx-document-file = "1.1.0"
+androidx-exif-interface = "1.4.2"
+androidx-window = "1.5.1"
+androidx-camera = "1.6.1"
+androidx-ktx = "2.10.0"
+#Fossify
+commons = "6.1.6"
+#Gradle
+gradlePlugins-agp = "9.4.1"
+#build
+app-build-compileSDKVersion = "36"
+app-build-targetSDK = "36"
+app-build-minimumSDK = "29"
+app-build-javaVersion = "VERSION_17"
+app-build-kotlinJVMTarget = "17"
+[libraries]
+#Android X
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "androidx-camera" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "androidx-camera" }
+androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "androidx-camera" }
+androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "androidx-camera" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "androidx-camera" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "androidx-camera" }
+androidx-window = { module = "androidx.window:window", version.ref = "androidx-window" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-ktx" }
+androidx-exifinterface = { module = "androidx.exifinterface:exifinterface", version.ref = "androidx-exif-interface" }
+androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "androidx-document-file" }
+#Compose
+compose-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektCompose" }
+#Fossify
+fossify-commons = { module = "org.fossify:commons", version.ref = "commons" }
+[bundles]
+androidx-camera = [
+    "androidx-camera-core",
+    "androidx-camera-camera2",
+    "androidx-camera-video",
+    "androidx-camera-extensions",
+    "androidx-camera-lifecycle",
+    "androidx-camera-view"
+]
+[plugins]
+android = { id = "com.android.application", version.ref = "gradlePlugins-agp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
