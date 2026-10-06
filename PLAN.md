@@ -77,7 +77,7 @@ Put new code under `org.fossify.camera.stamp` (or after the rename, `org.opengps
    - [x] Fork Fossify Camera, keeping its history
    - [x] Local SDK: platforms 34+36, build-tools 34+36, JDK 17
    - [x] Upstream history merged into this repo (`upstream` remote)
-   - [ ] `./gradlew assembleFossDebug` builds the unmodified app — **blocked**: cloud network policy denies `www.jitpack.io` (needed for `org.fossify:commons`); Maven Central also rate-limits (429) occasionally. Android SDK is at `/opt/android-sdk`, JDK 21 works as far as plugin resolution goes
+   - [x] `./gradlew assembleFossDebug` builds (with rebrand); occasional Maven Central 429s, just retry
    - [~] Rebrand: `APP_ID=org.opengpscam` and app name done (Kotlin namespace stays `org.fossify.camera` for now); icon and README still to do
 1. **Location**: permission flow, extended LocationProvider, accuracy and "waiting for GPS"
    indicator, AddressResolver with cache
