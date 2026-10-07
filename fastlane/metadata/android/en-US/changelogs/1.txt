@@ -1,1 +1,1 @@
-* Initial release.
+First OpenGPS Cam release: GPS stamp on photos (address, coordinates, compass heading, date/time, minimap, QR code, remarks), officer card, watermark and About screen.
