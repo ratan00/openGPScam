@@ -1,5 +1,7 @@
 # OpenGPS Cam
 
+![OpenGPS Cam: GPS map camera that stamps location, address, map and time on photos](docs/images/social-preview.png)
+
 [![Download latest APK](https://img.shields.io/github/v/release/ratan00/OpenGPSCam?label=Download%20APK&logo=android&logoColor=white&color=3DDC84&style=for-the-badge)](https://github.com/ratan00/OpenGPSCam/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/ratan00/OpenGPSCam/total?style=for-the-badge&color=blue)](https://github.com/ratan00/OpenGPSCam/releases)
 
