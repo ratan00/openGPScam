@@ -18,7 +18,7 @@
         errorLine1="    val megaPixels: String = String.format(&quot;%.1f&quot;, (width * height.toFloat()) / ONE_MEGA_PIXEL)"
         errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/models/MySize.kt"
+            file="src/main/kotlin/org/opengpscam/models/MySize.kt"
             line="18"
             column="30"/>
     </issue>
@@ -29,7 +29,7 @@
         errorLine1="        String.format(&quot;%.1f&quot;, (width * height.toFloat()) / ONE_MEGA_PIXEL)"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/models/VideoQuality.kt"
+            file="src/main/kotlin/org/opengpscam/models/VideoQuality.kt"
             line="19"
             column="9"/>
     </issue>
@@ -40,7 +40,7 @@
         errorLine1="            launchChangeAppLanguageIntent()"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/activities/SettingsActivity.kt"
+            file="src/main/kotlin/org/opengpscam/activities/SettingsActivity.kt"
             line="108"
             column="13"/>
     </issue>
@@ -69,7 +69,7 @@
         errorLine1="class SplashActivity : BaseSplashActivity() {"
         errorLine2="      ~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/activities/SplashActivity.kt"
+            file="src/main/kotlin/org/opengpscam/activities/SplashActivity.kt"
             line="6"
             column="7"/>
     </issue>
@@ -80,7 +80,7 @@
         errorLine1="        timerText.setFactory { layoutInflater.inflate(R.layout.timer_text, null) }"
         errorLine2="                                                                           ~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/activities/MainActivity.kt"
+            file="src/main/kotlin/org/opengpscam/activities/MainActivity.kt"
             line="380"
             column="76"/>
     </issue>
@@ -91,7 +91,7 @@
         errorLine1="        return (layoutInflater.inflate(R.layout.layout_button, null) as MaterialButton).apply {"
         errorLine2="                                                               ~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/activities/MainActivity.kt"
+            file="src/main/kotlin/org/opengpscam/activities/MainActivity.kt"
             line="894"
             column="64"/>
     </issue>
@@ -234,7 +234,7 @@
         errorLine1="        when (error?.code) {"
         errorLine2="        ~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/CameraErrorHandler.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/CameraErrorHandler.kt"
             line="16"
             column="9"/>
     </issue>
@@ -780,7 +780,7 @@
         errorLine1="    val activity: MainActivity,"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/PhotoProcessor.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/PhotoProcessor.kt"
             line="32"
             column="5"/>
     </issue>
@@ -810,7 +810,7 @@
     <issue
         id="UnusedResources"
         message="The resource `R.string.package_name` appears to be unused"
-        errorLine1="    &lt;string name=&quot;package_name&quot;>org.fossify.camera&lt;/string>"
+        errorLine1="    &lt;string name=&quot;package_name&quot;>org.opengpscam&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/donottranslate.xml"
@@ -1000,7 +1000,7 @@
         errorLine1="        set(path) = prefs.edit().putString(SAVE_PHOTOS, path).apply()"
         errorLine2="                    ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="29"
             column="21"/>
     </issue>
@@ -1011,7 +1011,7 @@
         errorLine1="        set(enabled) = prefs.edit().putBoolean(SOUND, enabled).apply()"
         errorLine2="                       ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="33"
             column="24"/>
     </issue>
@@ -1022,7 +1022,7 @@
         errorLine1="        set(volumeButtonsAsShutter) = prefs.edit()"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="37"
             column="39"/>
     </issue>
@@ -1033,7 +1033,7 @@
         errorLine1="        set(flipPhotos) = prefs.edit().putBoolean(FLIP_PHOTOS, flipPhotos).apply()"
         errorLine2="                          ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="42"
             column="27"/>
     </issue>
@@ -1044,7 +1044,7 @@
         errorLine1="        set(lens) = prefs.edit().putInt(LAST_USED_CAMERA_LENS, lens).apply()"
         errorLine2="                    ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="46"
             column="21"/>
     </issue>
@@ -1055,7 +1055,7 @@
         errorLine1="        set(initPhotoMode) = prefs.edit().putBoolean(INIT_PHOTO_MODE, initPhotoMode).apply()"
         errorLine2="                             ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="50"
             column="30"/>
     </issue>
@@ -1066,7 +1066,7 @@
         errorLine1="        set(state) = prefs.edit().putInt(FLASHLIGHT_STATE, state).apply()"
         errorLine2="                     ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="54"
             column="22"/>
     </issue>
@@ -1077,7 +1077,7 @@
         errorLine1="        set(backPhotoResIndex) = prefs.edit().putInt(BACK_PHOTO_RESOLUTION_INDEX, backPhotoResIndex)"
         errorLine2="                                 ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="58"
             column="34"/>
     </issue>
@@ -1088,7 +1088,7 @@
         errorLine1="        set(backVideoResIndex) = prefs.edit().putInt(BACK_VIDEO_RESOLUTION_INDEX, backVideoResIndex)"
         errorLine2="                                 ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="63"
             column="34"/>
     </issue>
@@ -1099,7 +1099,7 @@
         errorLine1="        set(frontPhotoResIndex) = prefs.edit()"
         errorLine2="                                  ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="68"
             column="35"/>
     </issue>
@@ -1110,7 +1110,7 @@
         errorLine1="        set(frontVideoResIndex) = prefs.edit()"
         errorLine2="                                  ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="73"
             column="35"/>
     </issue>
@@ -1121,7 +1121,7 @@
         errorLine1="        set(savePhotoMetadata) = prefs.edit().putBoolean(SAVE_PHOTO_METADATA, savePhotoMetadata)"
         errorLine2="                                 ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="78"
             column="34"/>
     </issue>
@@ -1132,7 +1132,7 @@
         errorLine1="        set(savePhotoVideoLocation) = prefs.edit()"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="83"
             column="39"/>
     </issue>
@@ -1143,7 +1143,7 @@
         errorLine1="        set(photoQuality) = prefs.edit().putInt(PHOTO_QUALITY, photoQuality).apply()"
         errorLine2="                            ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="88"
             column="29"/>
     </issue>
@@ -1154,7 +1154,7 @@
         errorLine1="        set(captureMode) = prefs.edit().putInt(CAPTURE_MODE, captureMode.ordinal).apply()"
         errorLine2="                           ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="95"
             column="28"/>
     </issue>
@@ -1165,7 +1165,7 @@
         errorLine1="        set(maxBrightness) = prefs.edit().putBoolean(MAX_BRIGHTNESS, maxBrightness).apply()"
         errorLine2="                             ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="99"
             column="30"/>
     </issue>
@@ -1176,7 +1176,7 @@
         errorLine1="        set(timerMode) = prefs.edit().putInt(TIMER_MODE, timerMode.ordinal).apply()"
         errorLine2="                         ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/helpers/Config.kt"
+            file="src/main/kotlin/org/opengpscam/helpers/Config.kt"
             line="104"
             column="26"/>
     </issue>
@@ -1187,7 +1187,7 @@
         errorLine1="                context.obtainStyledAttributes(styleResId, R.styleable.ShadowDrawable)"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/camera/views/ShadowDrawable.kt"
+            file="src/main/kotlin/org/opengpscam/views/ShadowDrawable.kt"
             line="75"
             column="17"/>
     </issue>
@@ -1198,7 +1198,7 @@
         errorLine1="                sharedBitmap = Bitmap.createBitmap("
         errorLine2="                               ^">
         <location
-            file="src/main/kotlin/org/fossify/camera/views/ShadowDrawable.kt"
+            file="src/main/kotlin/org/opengpscam/views/ShadowDrawable.kt"
             line="125"
             column="32"/>
     </issue>
@@ -1209,7 +1209,7 @@
         errorLine1="            createBitmap = Bitmap.createBitmap("
         errorLine2="                           ^">
         <location
-            file="src/main/kotlin/org/fossify/camera/views/ShadowDrawable.kt"
+            file="src/main/kotlin/org/opengpscam/views/ShadowDrawable.kt"
             line="136"
             column="28"/>
     </issue>
@@ -1220,7 +1220,7 @@
         errorLine1="            outputBuffer = Bitmap.createBitmap("
         errorLine2="                           ^">
         <location
-            file="src/main/kotlin/org/fossify/camera/views/ShadowDrawable.kt"
+            file="src/main/kotlin/org/opengpscam/views/ShadowDrawable.kt"
             line="156"
             column="28"/>
     </issue>

@@ -30,7 +30,7 @@ FOSS app has the full design. Target: F-Droid-quality, tracker-free.
 - Kotlin + CameraX 1.6.1, minSdk 29, compileSdk/targetSdk 36, AGP 9.4.1, Gradle 9.8.0, JVM 17
 - Upstream history is kept; `upstream` remote → FossifyOrg/Camera for future merges
 - Flavors: `core`, `foss`, `gplay` → use `foss` (e.g. `./gradlew assembleFossDebug`)
-- App id comes from `APP_ID` in `gradle.properties` (currently `org.fossify.camera`)
+- App id comes from `APP_ID` in `gradle.properties` (currently `org.opengpscam`)
 
 ### Existing hooks in the code
 
@@ -52,7 +52,7 @@ LocationProvider ─► AddressResolver ─► StampData {lat, lng, accuracy, ad
        └────────► MinimapRenderer ─────┘ (bitmap)
 ```
 
-Put new code under `org.fossify.camera.stamp` (or after the rename, `org.opengpscam.stamp`):
+Put new code under `org.opengpscam.stamp`:
 
 - **StampData**: immutable snapshot taken at the shutter press: lat, lng, accuracy,
   altitude?, address?, `ZonedDateTime`, isStale.
@@ -78,7 +78,7 @@ Put new code under `org.fossify.camera.stamp` (or after the rename, `org.opengps
    - [x] Local SDK: platforms 34+36, build-tools 34+36, JDK 17
    - [x] Upstream history merged into this repo (`upstream` remote)
    - [x] `./gradlew assembleFossDebug` builds (with rebrand); occasional Maven Central 429s, just retry
-   - [x] Rebrand: `APP_ID=org.opengpscam`, app name, README, F-Droid text (Kotlin namespace stays `org.fossify.camera`; launcher icon is still Fossify's)
+   - [x] Rebrand: `APP_ID=org.opengpscam`, app name, README, F-Droid text (Kotlin namespace and packages renamed to `org.opengpscam`)
 1. **Location** ✅: permission flow, extended LocationProvider, accuracy and "waiting for GPS"
    indicator, AddressResolver with cache
 2. **Stamping (text only)** ✅: StampData snapshot at the shutter press, PhotoStamper hooked

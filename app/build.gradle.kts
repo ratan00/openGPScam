@@ -115,7 +115,7 @@ android {
         )
     }
 
-    namespace = "org.fossify.camera"
+    namespace = "org.opengpscam"
 
     lint {
         checkReleaseBuilds = false
