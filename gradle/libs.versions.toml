@@ -12,7 +12,7 @@ androidx-camera = "1.6.1"
 androidx-ktx = "2.10.0"
 #Fossify
 commons = "6.1.6"
-zxing = "3.5.3"
+zxing = "3.5.4"
 #Gradle
 gradlePlugins-agp = "9.4.1"
 #build
